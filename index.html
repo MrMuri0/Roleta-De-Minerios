@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roleta de Minérios</title>
+  <!-- Importação da fonte Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Roleta de Minérios</h1>
+    <button id="spinButton">Roletar</button>
+    <button id="inventoryButton">Inventário</button>
+    <button id="chancesButton">Lista</button>
+    <button id="resetButton">Resetar</button>
+
+    <div id="result"></div>
+    <div id="inventory" class="hidden">
+      <h2>Inventário</h2>
+      <ul id="inventoryList"></ul>
+    </div>
+    <div id="chancesList" class="hidden">
+      <h2>Lista de Chances</h2>
+      <ul id="chances"></ul>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

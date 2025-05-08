@@ -1,0 +1,61 @@
+/* Importação da fonte */
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+body {
+  font-family: 'Fredoka One', cursive; /* Fonte cartoon */
+  text-align: center;
+  background-color: #333333; /* Fundo cinza escuro */
+  margin: 0;
+  padding: 0;
+  color: white; /* Texto branco para todo o site */
+}
+
+.container {
+  margin-top: 50px;
+}
+
+h1 {
+  font-size: 60px; /* Título ainda maior */
+  letter-spacing: 8px; /* Espaçamento maior entre as letras */
+  margin-bottom: 40px; /* Mais espaço abaixo do título */
+  color: white; /* Garante que o título seja branco */
+}
+
+button {
+  margin: 15px; /* Espaçamento maior entre os botões */
+  padding: 20px 40px; /* Botões ainda maiores */
+  font-size: 24px; /* Fonte maior nos botões */
+  cursor: pointer;
+  background-color: #03a9f4; /* Azul claro */
+  color: white;
+  border: none;
+  border-radius: 8px; /* Borda arredondada maior */
+  transition: background-color 0.3s;
+  font-family: 'Fredoka One', cursive; /* Aplica a mesma fonte nos botões */
+}
+
+button:hover {
+  background-color: #0288d1; /* Azul mais escuro ao passar o mouse */
+}
+
+#result {
+  margin-top: 30px;
+  font-size: 40px; /* Mensagem de resultado ainda maior */
+  font-weight: bold;
+  color: white; /* Mensagem de resultado em branco */
+}
+
+.hidden {
+  display: none;
+}
+
+#inventoryList, #chances {
+  list-style-type: none;
+  padding: 0;
+}
+
+#inventoryList li, #chances li {
+  margin: 10px 0; /* Espaçamento maior entre os itens da lista */
+  font-size: 22px; /* Itens da lista ainda maiores */
+  color: white; /* Itens da lista em branco */
+}
