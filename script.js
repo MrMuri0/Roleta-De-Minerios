@@ -73,18 +73,22 @@ function addItemToInventory(itemName) {
   saveInventory(); // Salva automaticamente o inventário
 }
 
-// Função para exibir o inventário
+// Função para exibir o inventário (ATUALIZADO)
 function showInventory() {
   const inventoryList = document.getElementById("inventoryList");
   inventoryList.innerHTML = ""; // Limpa a lista anterior
 
   let totalItems = 0; // Variável para contar o total de itens
-  for (let itemName in inventory) {
-    const li = document.createElement("li");
-    li.textContent = `${itemName}: ${inventory[itemName]}`;
-    inventoryList.appendChild(li);
-    totalItems += inventory[itemName]; // Soma o total
-  }
+
+  // Ordena o inventário com base na ordem da lista de itens
+  items.forEach((item) => {
+    if (inventory[item.name]) {
+      const li = document.createElement("li");
+      li.textContent = `${item.name}: ${inventory[item.name]}`;
+      inventoryList.appendChild(li);
+      totalItems += inventory[item.name]; // Soma o total
+    }
+  });
 
   // Exibe o total de itens
   const totalElement = document.createElement("p");
