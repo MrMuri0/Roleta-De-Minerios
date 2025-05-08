@@ -1,13 +1,19 @@
 // Definição dos itens e suas probabilidades
 const items = [
-  { name: "🌳 Terra", chance: 15 },
-  { name: "🪓 Madeira", chance: 10 },
-  { name: "🌑 Pedra", chance: 7 },
-  { name: "🔩 Ferro", chance: 5 },
-  { name: "🟨 Ouro", chance: 3 },
-  { name: "💎 Diamante", chance: 2 },
-  { name: "🟢 Esmeralda", chance: 1.4 },
-  { name: "🔴 Rubi", chance: 0.9 }
+  { name: "🌳 Terra", chance: 17 },
+  { name: "🪓 Madeira", chance: 12 },
+  { name: "🌑 Pedra", chance: 9 },
+  { name: "⬛ Obsidiana", chance: 8 },
+  { name: "🔩 Ferro", chance: 7 },
+  { name: "⬜ Quartzo", chance: 5.2 },
+  { name: "🟣 Ametista", chance: 4 },
+  { name: "🟨 Ouro", chance: 2.5 },
+  { name: "💎 Diamante", chance: 1.5 },
+  { name: "🟢 Esmeralda", chance: 1.2 },
+  { name: "🔴 Rubi", chance: 0.7 },
+  { name: "🌞 Pedra do Sol", chance: 0.5 },
+  { name: "🔷 Cristal da Lua", chance: 0.02 },
+  { name: "☄ Meteorito", chance: 0.007 }
 ];
 
 // Variáveis globais
