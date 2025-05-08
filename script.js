@@ -4,6 +4,7 @@ const items = [
   { name: "🪓 Madeira", chance: 12 },
   { name: "🌑 Pedra", chance: 9 },
   { name: "⬛ Obsidiana", chance: 8 },
+  { name: "🔶 Cobre", chance: 6.5 },
   { name: "🔩 Ferro", chance: 7 },
   { name: "⬜ Quartzo", chance: 5.2 },
   { name: "🟣 Ametista", chance: 4 },
