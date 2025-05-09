@@ -144,11 +144,62 @@ function resetProgress() {
   alert("Progresso resetado com sucesso!");
 }
 
+// Função para abrir o modal de conversão
+function openConvertModal() {
+  const convertModal = document.getElementById("convertModal");
+  const itemSelect = document.getElementById("itemSelect");
+
+  // Preenche o select com os itens disponíveis no inventário
+  itemSelect.innerHTML = "";
+  for (let itemName in inventory) {
+    const option = document.createElement("option");
+    option.value = itemName;
+    option.textContent = itemName;
+    itemSelect.appendChild(option);
+  }
+
+  toggleVisibility("convertModal");
+}
+
+// Função para confirmar a conversão
+function confirmConversion() {
+  const itemSelect = document.getElementById("itemSelect");
+  const quantityInput = document.getElementById("quantityInput");
+  const errorMessage = document.getElementById("errorMessage");
+
+  const selectedItem = itemSelect.value;
+  const selectedQuantity = parseInt(quantityInput.value);
+
+  // Verifica se o jogador tem o suficiente do item selecionado
+  if (!inventory[selectedItem] || inventory[selectedItem] < selectedQuantity) {
+    errorMessage.classList.remove("hidden");
+    return;
+  }
+
+  // Remove o item do inventário
+  inventory[selectedItem] -= selectedQuantity;
+
+  // Adiciona moedas ao inventário
+  const coinName = "💰 Moeda";
+  if (inventory[coinName]) {
+    inventory[coinName] += selectedQuantity;
+  } else {
+    inventory[coinName] = selectedQuantity;
+  }
+
+  saveInventory();
+  errorMessage.classList.add("hidden");
+  toggleVisibility("convertModal");
+  showInventory();
+}
+
 // Eventos dos botões
 document.getElementById("spinButton").addEventListener("click", spin);
 document.getElementById("inventoryButton").addEventListener("click", showInventory);
 document.getElementById("chancesButton").addEventListener("click", showChances);
 document.getElementById("resetButton").addEventListener("click", resetProgress);
+document.getElementById("convertButton").addEventListener("click", openConvertModal);
+document.getElementById("confirmConvert").addEventListener("click", confirmConversion);
 
 // Carregar o inventário ao iniciar o script
 loadInventory();
