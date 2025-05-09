@@ -16,16 +16,23 @@ body {
   color: white;
   margin: 0;
   padding: 0;
+  font-size: 24px; /* Tamanho padrão da fonte */
 }
 
 .container {
-  margin-top: 50px;
+  margin-top: 50px; /* Espaço acima do container */
+  margin-bottom: 20px; /* Espaço abaixo do container */
+}
+
+h1 {
+  font-size: 36px; /* Título maior */
+  margin-bottom: 20px; /* Espaço abaixo do título */
 }
 
 button {
   margin: 10px;
   padding: 15px 30px;
-  font-size: 20px;
+  font-size: 20px; /* Tamanho do texto dos botões */
   cursor: pointer;
   background-color: #03a9f4; /* Azul claro */
   color: white;
@@ -59,4 +66,8 @@ button:hover {
 .error {
   color: red;
   margin-top: 10px;
+}
+
+#inventoryList li, #chancesList li, #valuesList li {
+  font-size: 18px; /* Tamanho do texto do inventário, lista e valores */
 }
