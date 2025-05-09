@@ -220,6 +220,11 @@ function confirmConversion() {
   // Remove o item do inventário
   inventory[selectedItem] -= selectedQuantity;
 
+  // Se o item ficar com quantidade zero, remove-o completamente do inventário
+  if (inventory[selectedItem] <= 0) {
+    delete inventory[selectedItem];
+  }
+
   // Calcula o total de moedas ganhas
   const coinValue = conversionRates[selectedItem];
   const totalCoins = coinValue * selectedQuantity;
