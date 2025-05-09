@@ -190,13 +190,15 @@ function openConvertModal() {
   const convertModal = document.getElementById("convertModal");
   const itemSelect = document.getElementById("itemSelect");
 
-  // Preenche o select com os itens disponíveis no inventário
+  // Preenche o select com os itens disponíveis no inventário, exceto "Moeda"
   itemSelect.innerHTML = "";
   for (let itemName in inventory) {
-    const option = document.createElement("option");
-    option.value = itemName;
-    option.textContent = itemName;
-    itemSelect.appendChild(option);
+    if (itemName !== "💰 Moeda") { // Ignora "Moeda"
+      const option = document.createElement("option");
+      option.value = itemName;
+      option.textContent = itemName;
+      itemSelect.appendChild(option);
+    }
   }
 
   toggleVisibility("convertModal");
