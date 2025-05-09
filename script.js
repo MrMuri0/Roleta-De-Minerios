@@ -1,4 +1,4 @@
-// Definição dos itens e suas probabilidades
+// Definição dos itens, probabilidades e valores de conversão
 const items = [
   { name: "🌳 Terra", chance: 17 },
   { name: "🪓 Madeira", chance: 12 },
@@ -16,6 +16,25 @@ const items = [
   { name: "🔷 Cristal da Lua", chance: 0.02 },
   { name: "☄ Meteorito", chance: 0.007 }
 ];
+
+// Valores de conversão para moedas
+const conversionRates = {
+  "🌳 Terra": 0.5,
+  "🪓 Madeira": 1,
+  "🌑 Pedra": 2,
+  "⬛ Obsidiana": 5,
+  "🔶 Cobre": 6.5,
+  "🔩 Ferro": 7.5,
+  "⬜ Quartzo": 8,
+  "🟣 Ametista": 10,
+  "🟨 Ouro": 15,
+  "💎 Diamante": 20,
+  "🟢 Esmeralda": 30,
+  "🔴 Rubi": 50,
+  "🌞 Pedra do Sol": 100,
+  "🔷 Cristal da Lua": 500,
+  "☄ Meteorito": 1500
+};
 
 // Variáveis globais
 let inventory = {};
@@ -80,7 +99,7 @@ function addItemToInventory(itemName) {
   saveInventory(); // Salva automaticamente o inventário
 }
 
-// Função para exibir o inventário (ATUALIZADO)
+// Função para exibir o inventário
 function showInventory() {
   const inventoryList = document.getElementById("inventoryList");
   inventoryList.innerHTML = ""; // Limpa a lista anterior
@@ -117,6 +136,20 @@ function showChances() {
   }
 
   toggleVisibility("chancesList");
+}
+
+// Função para exibir os valores de conversão
+function showValues() {
+  const valuesList = document.getElementById("values");
+  valuesList.innerHTML = ""; // Limpa a lista anterior
+
+  for (let itemName in conversionRates) {
+    const li = document.createElement("li");
+    li.textContent = `${itemName}: ${conversionRates[itemName]} moedas`;
+    valuesList.appendChild(li);
+  }
+
+  toggleVisibility("valuesList");
 }
 
 // Função para alternar a visibilidade de um elemento
@@ -179,12 +212,16 @@ function confirmConversion() {
   // Remove o item do inventário
   inventory[selectedItem] -= selectedQuantity;
 
+  // Calcula o total de moedas ganhas
+  const coinValue = conversionRates[selectedItem];
+  const totalCoins = coinValue * selectedQuantity;
+
   // Adiciona moedas ao inventário
   const coinName = "💰 Moeda";
   if (inventory[coinName]) {
-    inventory[coinName] += selectedQuantity;
+    inventory[coinName] += totalCoins;
   } else {
-    inventory[coinName] = selectedQuantity;
+    inventory[coinName] = totalCoins;
   }
 
   saveInventory();
@@ -197,9 +234,10 @@ function confirmConversion() {
 document.getElementById("spinButton").addEventListener("click", spin);
 document.getElementById("inventoryButton").addEventListener("click", showInventory);
 document.getElementById("chancesButton").addEventListener("click", showChances);
-document.getElementById("resetButton").addEventListener("click", resetProgress);
+document.getElementById("valuesButton").addEventListener("click", showValues);
 document.getElementById("convertButton").addEventListener("click", openConvertModal);
 document.getElementById("confirmConvert").addEventListener("click", confirmConversion);
+document.getElementById("resetButton").addEventListener("click", resetProgress);
 
 // Carregar o inventário ao iniciar o script
 loadInventory();
