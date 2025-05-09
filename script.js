@@ -106,12 +106,22 @@ function showInventory() {
 
   let totalItems = 0; // Variável para contar o total de itens
 
-  // Exibe todos os itens do inventário
-  for (let itemName in inventory) {
-    const li = document.createElement("li");
-    li.textContent = `${itemName}: ${inventory[itemName]}`;
-    inventoryList.appendChild(li);
-    totalItems += inventory[itemName]; // Soma o total
+  // Exibe os itens do inventário na ordem da lista de chances
+  items.forEach((item) => {
+    if (inventory[item.name] && inventory[item.name] > 0) {
+      const li = document.createElement("li");
+      li.textContent = `${item.name}: ${inventory[item.name]}`;
+      inventoryList.appendChild(li);
+      totalItems += inventory[item.name]; // Soma o total
+    }
+  });
+
+  // Adiciona a moeda abaixo de todos os outros itens
+  if (inventory["💰 Moeda"] && inventory["💰 Moeda"] > 0) {
+    const coinLi = document.createElement("li");
+    coinLi.textContent = `💰 Moeda: ${inventory["💰 Moeda"]}`;
+    inventoryList.appendChild(coinLi);
+    totalItems += inventory["💰 Moeda"];
   }
 
   // Exibe o total de itens
