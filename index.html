@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Roleta de Minérios</title>
   <!-- Importação da fonte Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap " rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,6 +14,7 @@
     <button id="spinButton">Roletar</button>
     <button id="inventoryButton">Inventário</button>
     <button id="chancesButton">Lista</button>
+    <button id="convertButton">Converter</button>
     <button id="resetButton">Resetar</button>
 
     <div id="result"></div>
@@ -24,6 +25,17 @@
     <div id="chancesList" class="hidden">
       <h2>Lista de Chances</h2>
       <ul id="chances"></ul>
+    </div>
+
+    <!-- Modal de Conversão -->
+    <div id="convertModal" class="hidden modal">
+      <h2>Converter Itens em Moedas</h2>
+      <label for="itemSelect">Escolha o item:</label>
+      <select id="itemSelect"></select>
+      <label for="quantityInput">Quantidade:</label>
+      <input type="number" id="quantityInput" min="1" />
+      <button id="confirmConvert">Confirmar</button>
+      <p id="errorMessage" class="error hidden">Valores inválidos</p>
     </div>
   </div>
   <script src="script.js"></script>
