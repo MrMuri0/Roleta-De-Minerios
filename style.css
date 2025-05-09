@@ -1,61 +1,44 @@
-/* Importação da fonte */
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
-
-body {
-  font-family: 'Fredoka One', cursive; /* Fonte cartoon */
-  text-align: center;
-  background-color: #333333; /* Fundo cinza escuro */
-  margin: 0;
-  padding: 0;
-  color: white; /* Texto branco para todo o site */
-}
-
-.container {
-  margin-top: 50px;
-}
-
-h1 {
-  font-size: 60px; /* Título ainda maior */
-  letter-spacing: 8px; /* Espaçamento maior entre as letras */
-  margin-bottom: 40px; /* Mais espaço abaixo do título */
-  color: white; /* Garante que o título seja branco */
-}
-
-button {
-  margin: 15px; /* Espaçamento maior entre os botões */
-  padding: 20px 40px; /* Botões ainda maiores */
-  font-size: 24px; /* Fonte maior nos botões */
-  cursor: pointer;
-  background-color: #03a9f4; /* Azul claro */
+/* Estilo do modal */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #444;
   color: white;
-  border: none;
-  border-radius: 8px; /* Borda arredondada maior */
-  transition: background-color 0.3s;
-  font-family: 'Fredoka One', cursive; /* Aplica a mesma fonte nos botões */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  z-index: 10;
 }
 
-button:hover {
-  background-color: #0288d1; /* Azul mais escuro ao passar o mouse */
-}
-
-#result {
-  margin-top: 30px;
-  font-size: 40px; /* Mensagem de resultado ainda maior */
-  font-weight: bold;
-  color: white; /* Mensagem de resultado em branco */
-}
-
-.hidden {
+.modal.hidden {
   display: none;
 }
 
-#inventoryList, #chances {
-  list-style-type: none;
-  padding: 0;
+.modal h2 {
+  margin-top: 0;
 }
 
-#inventoryList li, #chances li {
-  margin: 10px 0; /* Espaçamento maior entre os itens da lista */
-  font-size: 22px; /* Itens da lista ainda maiores */
-  color: white; /* Itens da lista em branco */
+.modal label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+.modal select, .modal input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.modal button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
 }
