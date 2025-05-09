@@ -14,7 +14,8 @@
     <button id="spinButton">Roletar</button>
     <button id="inventoryButton">Inventário</button>
     <button id="chancesButton">Lista</button>
-    <button id="convertButton">Converter</button> <!-- Colocado antes do "Resetar" -->
+    <button id="valuesButton">Valores</button>
+    <button id="convertButton">Converter</button>
     <button id="resetButton">Resetar</button>
 
     <div id="result"></div>
@@ -26,15 +27,19 @@
       <h2>Lista de Chances</h2>
       <ul id="chances"></ul>
     </div>
+    <div id="valuesList" class="hidden">
+      <h2>Valores dos Itens</h2>
+      <ul id="values"></ul>
+    </div>
 
     <!-- Modal de Conversão -->
     <div id="convertModal" class="hidden modal">
       <h2>Converter Itens em Moedas</h2>
       <label for="itemSelect">Escolha o item:</label>
-      <select id="itemSelect"></select>
+      <select id="itemSelect" style="width: 100%; padding: 10px; margin-bottom: 10px;"></select>
       <label for="quantityInput">Quantidade:</label>
-      <input type="number" id="quantityInput" min="1" />
-      <button id="confirmConvert">Confirmar</button>
+      <input type="number" id="quantityInput" min="1" style="width: 100%; padding: 10px; margin-bottom: 10px;" />
+      <button id="confirmConvert" style="padding: 10px 20px;">Confirmar</button>
       <p id="errorMessage" class="error hidden">Valores inválidos</p>
     </div>
   </div>
