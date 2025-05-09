@@ -68,8 +68,18 @@ button:hover {
   margin-top: 10px;
 }
 
+#inventoryList {
+  margin-bottom: 20px; /* Adiciona espaço abaixo da lista */
+}
+
 #inventoryList li, #chancesList li, #valuesList li {
   font-size: 24px; /* Tamanho maior para itens */
+}
+
+#result {
+  font-size: 24px; /* Tamanho maior para a mensagem */
+  margin-top: 20px; /* Adiciona espaço acima da mensagem */
+  margin-bottom: 20px; /* Adiciona espaço abaixo da mensagem */
 }
 
 h2 {
