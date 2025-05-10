@@ -29,6 +29,14 @@ h1 {
   margin-bottom: 20px; /* Espaço abaixo do título */
 }
 
+.button-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px; /* Espaço entre os botões */
+  margin-bottom: 20px;
+}
+
 button {
   margin: 10px;
   padding: 15px 30px;
@@ -61,6 +69,22 @@ button:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
   z-index: 10;
   width: 300px;
+  position: relative; /* Para posicionar o botão "X" */
+}
+
+/* Estilo para o botão "X" */
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+}
+
+.close-button:hover {
+  color: #ff4d4d; /* Cor vermelha ao passar o mouse */
 }
 
 .error {
