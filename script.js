@@ -15,7 +15,7 @@ const items = [
   { name: "🌞 Pedra do Sol", chance: 0.5 },
   { name: "🔷 Cristal da Lua", chance: 0.02 },
   { name: "☄ Meteorito", chance: 0.007 },
-  { name: "🎁 Baú", chance: 3 } // Novo item "Baú"
+  { name: "🎁 Baú", chance: 3 } // Chance ajustada para 3%
 ];
 
 // Valores de conversão para moedas
@@ -274,21 +274,39 @@ function openChest() {
     // Remove 500 moedas do inventário
     inventory[coinName] -= 500;
 
-    // Sorteia um item valioso (acima de "Ametista")
-    const valuableItems = items.filter(item => conversionRates[item.name] > conversionRates["🟣 Ametista"]);
-    const randomIndex = Math.floor(Math.random() * valuableItems.length);
-    const valuableItem = valuableItems[randomIndex].name;
+    // Lista de itens raros que podem ser obtidos no baú
+    const rareItems = [
+      { name: "💎 Diamante", chance: 48 }, // Chance restante após Cristal da Lua e Meteorito
+      { name: "🟢 Esmeralda", chance: 20 },
+      { name: "🔴 Rubi", chance: 10 },
+      { name: "🌞 Pedra do Sol", chance: 10 },
+      { name: "🔷 Cristal da Lua", chance: 1 }, // 1% de chance
+      { name: "☄ Meteorito", chance: 0.5 } // 0.5% de chance
+    ];
 
-    // Adiciona o item ao inventário
-    addItemToInventory(valuableItem);
+    // Calcula a soma total das chances
+    const totalRareChances = rareItems.reduce((sum, item) => sum + item.chance, 0);
 
-    // Atualiza a mensagem
-    const resultElement = document.getElementById("result");
-    resultElement.innerHTML = `Você abriu o baú e ganhou: ${valuableItem}`;
+    // Gera um número aleatório para sortear o item raro
+    let random = Math.random() * totalRareChances;
+    let cumulativeChance = 0;
 
-    // Limpa os botões antigos
-    const buttons = document.querySelectorAll("#result button");
-    buttons.forEach(button => button.remove());
+    for (let item of rareItems) {
+      cumulativeChance += item.chance;
+      if (random < cumulativeChance) {
+        // Adiciona o item sorteado ao inventário
+        addItemToInventory(item.name);
+
+        // Atualiza a mensagem
+        const resultElement = document.getElementById("result");
+        resultElement.innerHTML = `Você abriu o baú e ganhou: ${item.name}`;
+
+        // Limpa os botões antigos
+        const buttons = document.querySelectorAll("#result button");
+        buttons.forEach(button => button.remove());
+        break;
+      }
+    }
   } else {
     alert("Você não tem suficientes moedas para abrir o baú!");
   }
