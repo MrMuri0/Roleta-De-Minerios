@@ -10,24 +10,34 @@
 </head>
 <body>
   <div class="container">
+    <!-- Título do Jogo -->
     <h1>Roleta de Minérios</h1>
-    <button id="spinButton">Roletar</button>
-    <button id="inventoryButton">Inventário</button>
-    <button id="chancesButton">Lista</button>
-    <button id="valuesButton">Valores</button>
-    <button id="convertButton">Converter</button>
-    <button id="resetButton">Resetar</button>
 
+    <!-- Botões Principais -->
+    <div class="button-container">
+      <button id="spinButton">Roletar</button>
+      <button id="inventoryButton">Inventário</button>
+      <button id="chancesButton">Lista</button>
+      <button id="valuesButton">Valores</button>
+      <button id="convertButton">Converter</button>
+      <button id="resetButton">Resetar</button>
+    </div>
+
+    <!-- Resultado do Sorteio -->
     <div id="result"></div>
-    <div id="inventory" class="hidden">
+
+    <!-- Seções Ocultas -->
+    <div id="inventory" class="hidden section">
       <h2>Inventário</h2>
       <ul id="inventoryList"></ul>
     </div>
-    <div id="chancesList" class="hidden">
+
+    <div id="chancesList" class="hidden section">
       <h2>Lista de Chances</h2>
       <ul id="chances"></ul>
     </div>
-    <div id="valuesList" class="hidden">
+
+    <div id="valuesList" class="hidden section">
       <h2>Valores dos Itens</h2>
       <ul id="values"></ul>
     </div>
@@ -43,6 +53,8 @@
       <p id="errorMessage" class="error hidden">Valores inválidos</p>
     </div>
   </div>
+
+  <!-- Script Principal -->
   <script src="script.js"></script>
 </body>
 </html>
