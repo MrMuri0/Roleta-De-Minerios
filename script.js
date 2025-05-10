@@ -15,7 +15,7 @@ const items = [
   { name: "🌞 Pedra do Sol", chance: 0.5 },
   { name: "🔷 Cristal da Lua", chance: 0.02 },
   { name: "☄ Meteorito", chance: 0.007 },
-  { name: "🎁 Baú", chance: 2.3 } // Novo item "Baú"
+  { name: "🎁 Baú", chance: 3 } // Novo item "Baú"
 ];
 
 // Valores de conversão para moedas
