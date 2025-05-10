@@ -14,7 +14,8 @@ const items = [
   { name: "🔴 Rubi", chance: 0.7 },
   { name: "🌞 Pedra do Sol", chance: 0.5 },
   { name: "🔷 Cristal da Lua", chance: 0.02 },
-  { name: "☄ Meteorito", chance: 0.007 }
+  { name: "☄ Meteorito", chance: 0.007 },
+  { name: "🎁 Baú", chance: 1.5 } // Novo item "Baú"
 ];
 
 // Valores de conversão para moedas
@@ -69,14 +70,19 @@ function spin() {
   for (let item of items) {
     cumulativeChance += item.chance;
     if (random < cumulativeChance) {
-      addItemToInventory(item.name);
-      resultElement.textContent = `Você ganhou: ${item.name}`;
-      resultElement.style.display = "block"; // Mostra a mensagem
+      if (item.name === "🎁 Baú") {
+        // Caso especial para o Baú
+        handleChest();
+      } else {
+        addItemToInventory(item.name);
+        resultElement.textContent = `Você ganhou: ${item.name}`;
+        resultElement.style.display = "block"; // Mostra a mensagem
 
-      // Esconde a mensagem após 2 segundos
-      setTimeout(() => {
-        resultElement.style.display = "none";
-      }, 2000); // Mensagem desaparece em 2 segundos
+        // Esconde a mensagem após 2 segundos
+        setTimeout(() => {
+          resultElement.style.display = "none";
+        }, 2000); // Mensagem desaparece em 2 segundos
+      }
 
       break;
     }
@@ -243,6 +249,55 @@ function confirmConversion() {
   errorMessage.classList.add("hidden");
   toggleVisibility("convertModal");
   showInventory(); // Atualiza o inventário na tela
+}
+
+// Função para lidar com o Baú
+function handleChest() {
+  const resultElement = document.getElementById("result");
+  const chestMessage = document.createElement("div");
+  chestMessage.innerHTML = `
+    <p>Você encontrou um <strong>🎁 Baú</strong>!</p>
+    <button id="openChestButton">Abrir baú por 500 moedas</button>
+    <button id="ignoreChestButton">Ignorar</button>
+  `;
+  resultElement.appendChild(chestMessage);
+
+  // Eventos dos botões
+  document.getElementById("openChestButton").addEventListener("click", openChest);
+  document.getElementById("ignoreChestButton").addEventListener("click", ignoreChest);
+}
+
+// Função para abrir o baú
+function openChest() {
+  const coinName = "💰 Moeda";
+  if (inventory[coinName] >= 500) {
+    // Remove 500 moedas do inventário
+    inventory[coinName] -= 500;
+
+    // Sorteia um item valioso (acima de "Ametista")
+    const valuableItems = items.filter(item => conversionRates[item.name] > conversionRates["🟣 Ametista"]);
+    const randomIndex = Math.floor(Math.random() * valuableItems.length);
+    const valuableItem = valuableItems[randomIndex].name;
+
+    // Adiciona o item ao inventário
+    addItemToInventory(valuableItem);
+
+    // Atualiza a mensagem
+    const resultElement = document.getElementById("result");
+    resultElement.innerHTML = `Você abriu o baú e ganhou: ${valuableItem}`;
+
+    // Limpa os botões antigos
+    const buttons = document.querySelectorAll("#result button");
+    buttons.forEach(button => button.remove());
+  } else {
+    alert("Você não tem suficientes moedas para abrir o baú!");
+  }
+}
+
+// Função para ignorar o baú
+function ignoreChest() {
+  const resultElement = document.getElementById("result");
+  resultElement.innerHTML = "";
 }
 
 // Eventos dos botões
