@@ -329,30 +329,3 @@ document.getElementById("resetButton").addEventListener("click", resetProgress);
 
 // Carregar o inventário ao iniciar o script
 loadInventory();
-}
-
-// Função para abrir o modal de conversão
-function openConvertModal() {
-  const convertModal = document.getElementById("convertModal");
-  const itemSelect = document.getElementById("itemSelect");
-
-  // Preenche o select com os itens disponíveis no inventário, exceto "Moeda"
-  itemSelect.innerHTML = "";
-  for (let itemName in inventory) {
-    if (itemName !== "💰 Moeda") { // Ignora "Moeda"
-      const option = document.createElement("option");
-      option.value = itemName;
-      option.textContent = itemName;
-      itemSelect.appendChild(option);
-    }
-  }
-
-  toggleVisibility("convertModal");
-
-  // Adiciona o evento para fechar o modal ao clicar no botão "X"
-  const closeButton = document.getElementById("closeConvertModal");
-  closeButton.onclick = () => toggleVisibility("convertModal");
-}
-
-// Garantir que o botão "X" também funcione corretamente ao carregar o script
-document.getElementById("closeConvertModal").onclick = () => toggleVisibility("convertModal");
