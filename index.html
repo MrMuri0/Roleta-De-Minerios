@@ -1,61 +1,1034 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roleta de Minérios</title>
-  <!-- Importação da fonte Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap " rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Roleta de Minérios</title>
+   <!-- Inclui o Tailwind CSS para estilização -->
+   <script src="https://cdn.tailwindcss.com"></script>
+   <style>
+       /* Define a fonte Inter para todo o corpo */
+       body {
+           font-family: 'Inter', sans-serif;
+       }
+       /* Estilo para o modal */
+       .modal-overlay {
+           background-color: rgba(0, 0, 0, 0.7);
+           z-index: 1000; /* Garante que o modal esteja acima de outros elementos */
+       }
+       .modal-content {
+           z-index: 1001; /* Conteúdo do modal acima do overlay */
+       }
+       /* Classes para texto colorido (gradiente) */
+       .text-colorful {
+           background-clip: text;
+           -webkit-background-clip: text;
+           color: transparent;
+           background-image: linear-gradient(to right, #a78bfa, #ec4899, #ef4444); /* Roxo, Rosa, Vermelho */
+       }
+       /* Estilo para input com erro */
+       .input-error {
+           border-color: #ef4444; /* Vermelho */
+           color: #ef4444; /* Vermelho */
+       }
+       /* Classe para fonte extra pequena */
+       .text-xxs {
+           font-size: 0.65rem; /* Um pouco menor que text-xs (0.75rem) */
+       }
+   </style>
+   <!-- Firebase SDKs -->
+   <script type="module">
+       import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+       import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+       import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+
+       // Variáveis globais para Firebase (serão preenchidas pelo ambiente Canvas)
+       const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+       const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+       const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+
+       // Inicializa o Firebase
+       const app = initializeApp(firebaseConfig);
+       const db = getFirestore(app);
+       const auth = getAuth(app);
+
+
+       // Exporta as instâncias para uso no script principal
+       window.firebaseApp = app;
+       window.firestoreDb = db;
+       window.firebaseAuth = auth;
+       window.initialAuthToken = initialAuthToken;
+       window.appId = appId;
+       window.onAuthStateChanged = onAuthStateChanged; // Exporta para o script principal
+       window.signInAnonymously = signInAnonymously; // Exporta para o script principal
+       window.signInWithCustomToken = signInWithCustomToken; // Exporta para o script principal
+       window.doc = doc; // Exporta para o script principal
+       window.setDoc = setDoc; // Exporta para o script principal
+       window.onSnapshot = onSnapshot; // Exporta para o script principal
+   </script>
 </head>
-<body>
-  <div class="container">
-    <!-- Título do Jogo -->
-    <h1>Roleta de Minérios</h1>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+   <div class="bg-gray-800 p-8 rounded-lg shadow-xl text-center max-w-4xl w-full">
+       <h1 class="text-3xl font-bold mb-6 text-gray-100">Roleta de Minérios</h1>
 
-    <!-- Botões Principais -->
-    <div class="button-container">
-      <button id="spinButton">Roletar</button>
-      <button id="inventoryButton">Inventário</button>
-      <button id="chancesButton">Lista</button>
-      <button id="valuesButton">Valores</button>
-      <button id="convertButton">Converter</button>
-      <button id="resetButton">Resetar</button>
-    </div>
 
-    <!-- Resultado do Sorteio -->
-    <div id="result"></div>
+       <!-- Display de Moedas -->
+       <div class="mb-4 text-xl font-bold text-yellow-400">
+           Moedas: <span id="coinDisplay">0</span> 💰
+       </div>
 
-    <!-- Seções Ocultas -->
-    <div id="inventory" class="hidden section">
-      <h2>Inventário</h2>
-      <ul id="inventoryList"></ul>
-    </div>
 
-    <div id="chancesList" class="hidden section">
-      <h2>Lista de Chances</h2>
-      <ul id="chances"></ul>
-    </div>
+       <!-- Contêiner para empilhar os botões verticalmente -->
+       <div class="flex flex-col items-center mb-8">
+           <!-- Botão de Minerar Aumentado -->
+           <button id="mineButton"
+                   class="bg-white text-gray-900 font-bold py-4 px-10 rounded-full shadow-lg hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105 mb-4">
+               Minerar
+           </button>
 
-    <div id="valuesList" class="hidden section">
-      <h2>Valores dos Itens</h2>
-      <ul id="values"></ul>
-    </div>
 
-    <!-- Modal de Conversão -->
-    <div id="convertModal" class="hidden modal">
-      <span id="closeConvertModal" class="close-button">&times;</span> <!-- Botão "X" -->
-      <h2>Converter Itens em Moedas</h2>
-      <label for="itemSelect">Escolha o item:</label>
-      <select id="itemSelect" style="width: 100%; padding: 10px; margin-bottom: 10px;"></select>
-      <label for="quantityInput">Quantidade:</label>
-      <input type="number" id="quantityInput" min="1" style="width: 100%; padding: 10px; margin-bottom: 10px;" />
-      <button id="confirmConvert" style="padding: 10px 20px;">Confirmar</button>
-      <p id="errorMessage" class="error hidden">Valores inválidos</p>
-    </div>
-  </div>
+           <!-- Contêiner para os botões secundários (Converter, Inventário, Raridades, Valores) -->
+           <!-- As classes aqui serão manipuladas via JavaScript para alternar entre layouts -->
+           <div id="secondaryButtonsContainer" class="flex flex-row justify-center space-x-6 px-4">
+               <button id="convertButton"
+                       class="bg-gray-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105">
+                   Converter
+               </button>
+               <button id="inventoryButton"
+                       class="bg-gray-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105">
+                   Inventário
+               </button>
+               <button id="raritiesButton"
+                       class="bg-gray-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105">
+                   Raridades
+               </button>
+               <button id="valuesButton"
+                       class="bg-gray-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105">
+                   Valores
+               </button>
+           </div>
+       </div>
 
-  <!-- Script Principal -->
-  <script src="script.js"></script>
+
+       <!-- Mostrador do Item Obtido -->
+       <div class="mt-8 p-4 bg-gray-700 rounded-lg text-lg font-semibold text-gray-200">
+           <p id="resultDisplay" class="whitespace-nowrap overflow-hidden">Clique em "Minerar" para começar!</p>
+       </div>
+
+
+       <!-- Opções do Baú (movido para cima) -->
+       <div id="chestOptions" class="mt-4 hidden">
+           <div class="flex justify-center space-x-4">
+               <button id="ignoreChestButton"
+                       class="bg-red-500 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-red-600 focus:outline-none focus:ring-4 focus:ring-red-400 focus:ring-opacity-50 transition duration-300 ease-in-out">
+                   Ignorar
+               </button>
+               <button id="buyChestButton"
+                       class="bg-green-500 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition duration-300 ease-in-out">
+                   Comprar por 500 Moedas
+               </button>
+           </div>
+           <p id="coinMessage" class="text-red-400 mt-2 hidden">Moedas insuficientes!</p>
+       </div>
+
+
+       <!-- Botões de Seleção de Layout (movido para baixo) -->
+       <div class="flex justify-center space-x-4 mt-8 mb-4">
+           <button id="computerButton" class="bg-gray-600 text-white font-bold py-2 px-4 rounded-full shadow-lg hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-400 transition duration-300 ease-in-out">
+               Computador
+           </button>
+           <button id="mobileButton" class="bg-gray-600 text-white font-bold py-2 px-4 rounded-full shadow-lg hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-400 transition duration-300 ease-in-out">
+               Celular
+           </button>
+       </div>
+   </div>
+
+
+   <!-- Modal genérico para Inventário, Raridades, Converter e Valores -->
+   <div id="infoModal" class="fixed inset-0 flex items-center justify-center hidden modal-overlay">
+       <div class="bg-gray-700 p-8 rounded-lg shadow-xl text-center max-w-sm w-full modal-content relative">
+           <h2 id="modalTitle" class="text-2xl font-bold mb-4 text-gray-100"></h2>
+           <!-- Botão 'X' para fechar o modal -->
+           <button id="closeModalButton"
+                   class="absolute top-4 right-4 text-gray-400 hover:text-gray-200 text-3xl font-bold leading-none focus:outline-none">
+               &times;
+           </button>
+           <div id="modalContent" class="text-left text-gray-200 max-h-60 overflow-y-auto pr-2">
+               <!-- Conteúdo (inventário, raridades, converter ou valores) será injetado aqui -->
+           </div>
+       </div>
+   </div>
+
+
+   <script>
+       // Variáveis globais do Firebase (exportadas do script 'module' acima)
+       let firestoreDb;
+       let firebaseAuth;
+       let initialAuthToken;
+       let appId;
+       let onAuthStateChanged;
+       let signInAnonymously;
+       let signInWithCustomToken;
+       let doc;
+       let setDoc;
+       let onSnapshot;
+
+
+       // Aguarda o carregamento do DOM e das variáveis do Firebase
+       window.onload = async () => {
+           // Atribui as variáveis globais do Firebase
+           firestoreDb = window.firestoreDb;
+           firebaseAuth = window.firebaseAuth;
+           initialAuthToken = window.initialAuthToken;
+           appId = window.appId;
+           onAuthStateChanged = window.onAuthStateChanged;
+           signInAnonymously = window.signInAnonymously;
+           signInWithCustomToken = window.signInWithCustomToken;
+           doc = window.doc;
+           setDoc = window.setDoc;
+           onSnapshot = window.onSnapshot;
+
+
+           // Autentica o usuário
+           onAuthStateChanged(firebaseAuth, async (user) => {
+               if (!user) {
+                   try {
+                       if (initialAuthToken) {
+                           await signInWithCustomToken(firebaseAuth, initialAuthToken);
+                       } else {
+                           await signInAnonymously(firebaseAuth);
+                       }
+                   } catch (error) {
+                       console.error("Erro na autenticação Firebase:", error);
+                   }
+               }
+               // Carrega os dados do jogo após a autenticação
+               loadGameData();
+           });
+
+
+           // Inicializa a exibição de moedas ao carregar a página
+           updateCoinDisplay();
+           // Define a mensagem inicial no mostrador
+           updateResultDisplay(currentMainMessage, false);
+           // Define o layout inicial como computador
+           setDesktopLayout();
+       };
+
+
+       // Define os itens e suas respectivas "pesos" (proporcional às porcentagens)
+       const items = [
+           { name: '🌳 Terra', weight: 17 },
+           { name: '🪓 Madeira', weight: 12 },
+           { name: '🌑 Pedra', weight: 9 },
+           { name: '⬛ Obsidiana', weight: 8 },
+           { name: '🔶 Cobre', weight: 6.5 },
+           { name: '🔩 Ferro', weight: 7 },
+           { name: '⬜ Quartzo', weight: 5.2 },
+           { name: '🟣 Ametista', weight: 4 },
+           { name: '🟨 Ouro', weight: 2.5 },
+           { name: '💎 Diamante', weight: 1.5 },
+           { name: '🟢 Esmeralda', weight: 1.2 },
+           { name: '🔴 Rubi', weight: 0.7 },
+           { name: '🌞 Pedra do Sol', weight: 0.5 },
+           { name: '🔷 Cristal da Lua', weight: 0.02 },
+           { name: '☄ Meteorito', weight: 0.007 },
+           { name: '🎁 Baú', weight: 4 } // Item Baú
+       ];
+
+
+       // Define os itens que podem vir dentro do baú e suas chances
+       const chestItems = [
+           { name: '🟢 Esmeralda', weight: 0.8 },
+           { name: '🔴 Rubi', weight: 0.7 },
+           { name: '🌞 Pedra do Sol', weight: 0.5 },
+           { name: '🔷 Cristal da Lua', weight: 0.2 },
+           { name: '☄ Meteorito', weight: 0.1 }
+       ];
+
+
+       // Valores de conversão de itens para moedas
+       const itemCoinValues = {
+           '🌳 Terra': 0.5,
+           '🪓 Madeira': 1,
+           '🌑 Pedra': 2,
+           '⬛ Obsidiana': 5,
+           '🔶 Cobre': 6.5,
+           '🔩 Ferro': 7.5,
+           '⬜ Quartzo': 8,
+           '🟣 Ametista': 10,
+           '🟨 Ouro': 15,
+           '💎 Diamante': 20,
+           '🟢 Esmeralda': 30,
+           '🔴 Rubi': 50,
+           '🌞 Pedra do Sol': 100,
+           '🔷 Cristal da Lua': 500,
+           '☄ Meteorito': 1500
+       };
+
+
+       // Calcula a soma total dos pesos para normalização dos itens de mineração
+       const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
+       // Calcula a soma total dos pesos para normalização dos itens do baú
+       const totalChestWeight = chestItems.reduce((sum, item) => sum + item.weight, 0);
+
+
+
+
+       // Referências aos elementos HTML
+       const mineButton = document.getElementById('mineButton');
+       const inventoryButton = document.getElementById('inventoryButton');
+       const raritiesButton = document.getElementById('raritiesButton');
+       const convertButton = document.getElementById('convertButton');
+       const valuesButton = document.getElementById('valuesButton');
+       const resultDisplay = document.getElementById('resultDisplay');
+       const infoModal = document.getElementById('infoModal');
+       const modalTitle = document.getElementById('modalTitle');
+       const modalContent = document.getElementById('modalContent');
+       const closeModalButton = document.getElementById('closeModalButton');
+       const coinDisplay = document.getElementById('coinDisplay');
+       const chestOptions = document.getElementById('chestOptions');
+       const ignoreChestButton = document.getElementById('ignoreChestButton');
+       const buyChestButton = document.getElementById('buyChestButton');
+       const coinMessage = document.getElementById('coinMessage');
+
+
+       // Novos botões de layout
+       const computerButton = document.getElementById('computerButton');
+       const mobileButton = document.getElementById('mobileButton');
+       const secondaryButtonsContainer = document.getElementById('secondaryButtonsContainer');
+
+
+
+
+       let animationInterval;
+       let inventory = {};
+       let coins = 0; // Moedas iniciais
+
+
+       let currentMainMessage = 'Clique em "Minerar" para começar!'; // Mensagem "permanente" no mostrador
+       let messageTimeoutId = null; // ID para o timeout das mensagens temporárias
+       let discoveredItems = new Set(); // Conjunto para armazenar itens já descobertos
+       let isMining = false; // Flag para evitar cliques múltiplos durante a mineração
+
+
+       let saveTimeoutId = null; // Para debouncing do salvamento
+       const SAVE_DELAY = 1000; // Salva a cada 1 segundo após a última alteração
+
+
+       // Função para salvar os dados do jogo no Firestore (com debouncing)
+       function saveGameData() {
+           if (!firestoreDb || !firebaseAuth.currentUser) {
+               console.warn("Firestore ou usuário não autenticado. Não é possível salvar os dados.");
+               return;
+           }
+
+
+           if (saveTimeoutId) {
+               clearTimeout(saveTimeoutId);
+           }
+
+
+           saveTimeoutId = setTimeout(async () => {
+               const userId = firebaseAuth.currentUser.uid;
+               const gameDocRef = doc(firestoreDb, `artifacts/${appId}/users/${userId}/gameData/current`);
+               try {
+                   await setDoc(gameDocRef, {
+                       inventory: inventory,
+                       coins: coins,
+                       discoveredItems: Array.from(discoveredItems) // Converte Set para Array para salvar
+                   });
+                   console.log("Dados do jogo salvos com sucesso!");
+               } catch (e) {
+                   console.error("Erro ao salvar dados do jogo:", e);
+               }
+           }, SAVE_DELAY);
+       }
+
+
+       // Função para carregar os dados do jogo do Firestore
+       function loadGameData() {
+           if (!firestoreDb) {
+               console.warn("Firestore não inicializado. Não é possível carregar os dados.");
+               return;
+           }
+
+
+           // Garante que o usuário esteja autenticado antes de tentar carregar
+           onAuthStateChanged(firebaseAuth, (user) => {
+               if (user) {
+                   const userId = user.uid;
+                   const gameDocRef = doc(firestoreDb, `artifacts/${appId}/users/${userId}/gameData/current`);
+
+
+                   onSnapshot(gameDocRef, (docSnap) => {
+                       if (docSnap.exists()) {
+                           const data = docSnap.data();
+                           inventory = data.inventory || {};
+                           coins = data.coins || 0;
+                           discoveredItems = new Set(data.discoveredItems || []); // Converte Array para Set ao carregar
+                           updateCoinDisplay();
+                           console.log("Dados do jogo carregados com sucesso!");
+                       } else {
+                           console.log("Nenhum dado de jogo encontrado para este usuário. Iniciando novo jogo.");
+                           // Se não houver dados, salva o estado inicial para criar o documento
+                           saveGameData();
+                       }
+                   }, (error) => {
+                       console.error("Erro ao carregar dados do jogo em tempo real:", error);
+                   });
+               } else {
+                   console.log("Aguardando autenticação para carregar dados do jogo.");
+               }
+           });
+       }
+
+
+       // Função para atualizar a exibição de moedas
+       function updateCoinDisplay() {
+           coinDisplay.textContent = coins;
+       }
+
+
+       // Função para atualizar o mostrador de resultados com lógica de fonte e temporização
+       function updateResultDisplay(message, isTemporary = false) {
+           // Limpa qualquer timeout existente para evitar sobreposição de mensagens
+           if (messageTimeoutId) {
+               clearTimeout(messageTimeoutId);
+               messageTimeoutId = null;
+           }
+
+
+           const resultDisplayElement = document.getElementById('resultDisplay');
+           // Remove todas as classes de tamanho de fonte para aplicar a correta
+           resultDisplayElement.classList.remove('text-lg', 'text-base', 'text-sm', 'text-xs', 'text-xxs', 'text-xl');
+
+
+           // Lógica de ajuste de fonte mais agressiva para garantir que caiba em uma linha
+           // Ajusta os limites de comprimento para cada tamanho de fonte
+           if (message.length > 60) { // Mensagens muito, muito longas
+               resultDisplayElement.classList.add('text-xxs');
+           } else if (message.length > 50) { // Muito longo
+               resultDisplayElement.classList.add('text-xs');
+           } else if (message.length > 40) { // Longo
+               resultDisplayElement.classList.add('text-sm');
+           } else if (message.length > 30) { // Médio
+               resultDisplayElement.classList.add('text-base');
+           } else if (message.length > 20) { // Um pouco maior
+               resultDisplayElement.classList.add('text-lg');
+           } else { // Curto
+               resultDisplayElement.classList.add('text-xl'); // Tamanho padrão
+           }
+
+
+           resultDisplayElement.textContent = message;
+           resultDisplayElement.classList.remove('hidden'); // Garante que o mostrador esteja visível
+
+
+           if (isTemporary) {
+               messageTimeoutId = setTimeout(() => {
+                   // Ao reverter, o mostrador deve voltar ao estado anterior
+                   // Se o baú está visível, garante que a mensagem do baú e suas opções voltem
+                   if (!chestOptions.classList.contains('hidden')) {
+                       updateResultDisplay('Você encontrou um 🎁 Baú!', false); // Reaplicar a lógica de fonte para a mensagem do baú
+                   } else {
+                       updateResultDisplay(currentMainMessage, false); // Reaplicar a lógica de fonte para a mensagem principal
+                   }
+               }, 2000); // 2 segundos
+           } else {
+               currentMainMessage = message; // Atualiza a mensagem permanente
+           }
+       }
+
+
+       // Função para simular a mineração e determinar o item final
+       function getRandomMinedItem() {
+           let randomNumber = Math.random() * totalWeight;
+           for (const item of items) {
+               randomNumber -= item.weight;
+               if (randomNumber <= 0) {
+                   return item.name;
+               }
+           }
+           return 'Nenhum item encontrado'; // Fallback
+       }
+
+
+       // Nova função para sortear um item do baú
+       function getRandomChestItem() {
+           let randomNumber = Math.random() * totalChestWeight;
+           for (const item of chestItems) {
+               randomNumber -= item.weight;
+               if (randomNumber <= 0) {
+                   return item.name;
+               }
+           }
+           return 'Nenhum item do baú encontrado'; // Fallback
+       }
+
+
+       // Função para iniciar a animação de roletar
+       function startAnimation(finalItem) {
+           if (animationInterval) {
+               clearInterval(animationInterval);
+           }
+
+
+           // Desabilita o botão de mineração durante a animação
+           mineButton.disabled = true;
+           // Os outros botões permanecem habilitados
+           inventoryButton.disabled = false;
+           raritiesButton.disabled = false;
+           convertButton.disabled = false;
+           valuesButton.disabled = false;
+
+
+           updateResultDisplay(`Roletando... ${items[Math.floor(Math.random() * items.length)].name}`);
+
+
+           animationInterval = setInterval(() => {
+               const randomIndex = Math.floor(Math.random() * items.length);
+               updateResultDisplay(`Roletando... ${items[randomIndex].name}`);
+           }, 50);
+
+
+           setTimeout(() => {
+               clearInterval(animationInterval);
+
+
+               if (finalItem === '🎁 Baú') {
+                   updateResultDisplay('Você encontrou um 🎁 Baú!', false); // Mensagem no mostrador
+                   chestOptions.classList.remove('hidden');
+                   coinMessage.classList.add('hidden');
+                   mineButton.disabled = true; // Mantém o botão de mineração desabilitado até interagir com o baú
+                   isMining = false; // Libera o flag de mineração para permitir interação com o baú
+               } else {
+                   updateResultDisplay(`Você minerou: ${finalItem}`, false);
+                   inventory[finalItem] = (inventory[finalItem] || 0) + 1; // Adiciona 1 ao inventário
+                   discoveredItems.add(finalItem); // Adiciona o item aos descobertos
+                   saveGameData(); // Salva os dados após a mineração
+                   // Cooldown de 0.5 segundo para o botão de mineração
+                   setTimeout(() => {
+                       mineButton.disabled = false;
+                       isMining = false; // Libera o flag de mineração após o cooldown
+                   }, 500);
+               }
+           }, 1000);
+       }
+
+
+       // Função principal de mineração
+       function mine() {
+           // Se já estiver minerando ou se as opções do baú estiverem visíveis, não permite minerar
+           if (isMining || !chestOptions.classList.contains('hidden')) {
+               return;
+           }
+           isMining = true; // Define o flag de mineração
+           const finalItem = getRandomMinedItem();
+           startAnimation(finalItem);
+       }
+
+
+       // Função para lidar com o botão "Ignorar" do baú
+       function handleIgnoreChest() {
+           chestOptions.classList.add('hidden');
+           updateResultDisplay('Você ignorou o baú.', false);
+           mineButton.disabled = false; // Reabilita o botão de mineração
+           isMining = false; // Libera o flag de mineração
+       }
+
+
+       // Função para lidar com o botão "Comprar" do baú
+       function handleBuyChest() {
+           const cost = 500;
+           if (coins >= cost) {
+               coins -= cost;
+               updateCoinDisplay();
+               chestOptions.classList.add('hidden');
+
+
+               const minedChestItem = getRandomChestItem();
+               inventory[minedChestItem] = (inventory[minedChestItem] || 0) + 1; // Adiciona 1 ao inventário
+               discoveredItems.add(minedChestItem); // Adiciona o item do baú aos descobertos
+               updateResultDisplay(`Você abriu o baú e ganhou: ${minedChestItem}!`, false);
+               saveGameData(); // Salva os dados após a compra do baú
+
+
+               mineButton.disabled = false; // Reabilita o botão de mineração
+               isMining = false; // Libera o flag de mineração
+           } else {
+               coinMessage.classList.remove('hidden');
+           }
+       }
+
+
+       // Função para exibir o inventário
+       function showInventory() {
+           let contentHtml = '';
+           modalTitle.textContent = 'Seu Inventário';
+
+
+           // Mapeia todos os itens definidos (mineração e baú) para fácil acesso ao peso
+           const allDefinedItemsMap = new Map();
+           items.forEach(item => allDefinedItemsMap.set(item.name, item));
+           chestItems.forEach(item => allDefinedItemsMap.set(item.name, item));
+
+
+           const inventoryItemsWithWeights = Object.keys(inventory).map(itemName => {
+               const itemDefinition = allDefinedItemsMap.get(itemName);
+               return {
+                   name: itemName,
+                   count: inventory[itemName],
+                   weight: itemDefinition ? itemDefinition.weight : 0 // Adiciona o peso para ordenação
+               };
+           });
+
+
+           // Ordena os itens do inventário por peso (raridade), do mais comum (maior peso) para o mais raro
+           inventoryItemsWithWeights.sort((a, b) => b.weight - a.weight);
+
+
+           if (inventoryItemsWithWeights.length === 0) {
+               contentHtml = '<p>Nenhum item no inventário ainda.</p>';
+           } else {
+               contentHtml = '<div class="space-y-2">';
+               for (const item of inventoryItemsWithWeights) {
+                   contentHtml += `
+                       <div class="flex justify-between items-center text-lg">
+                           <span>${item.name}</span>
+                           <span class="font-bold text-gray-100">${item.count}X</span>
+                       </div>
+                   `;
+               }
+               contentHtml += '</div>';
+           }
+           modalContent.innerHTML = contentHtml;
+           infoModal.classList.remove('hidden');
+       }
+
+
+       // Função para exibir as raridades
+       function showRarities() {
+           let contentHtml = '';
+           modalTitle.textContent = 'Raridades dos Minérios';
+
+
+           contentHtml = '<div class="space-y-2">';
+
+
+           const uniqueItemsMap = new Map();
+
+
+           // Adiciona itens da lista principal
+           items.filter(item => item.name !== '🎁 Baú').forEach(item => {
+               uniqueItemsMap.set(item.name, item);
+           });
+
+
+           // Adiciona itens do baú, mas só se ainda não estiverem no mapa (prioriza a definição da lista principal)
+           chestItems.forEach(item => {
+               if (!uniqueItemsMap.has(item.name)) {
+                   uniqueItemsMap.set(item.name, item);
+               }
+           });
+
+
+           const allSortableItems = Array.from(uniqueItemsMap.values());
+           allSortableItems.sort((a, b) => b.weight - a.weight); // Ordena por peso (raridade)
+
+
+           for (const item of allSortableItems) {
+               // Verifica se o item foi descoberto (se já esteve no inventário)
+               const isDiscovered = discoveredItems.has(item.name);
+               const finalDisplayName = isDiscovered ? item.name : '? Item misterioso';
+
+
+               contentHtml += `
+                   <div class="flex justify-between items-center text-lg">
+                       <span>${finalDisplayName}</span>
+                       <span class="font-bold text-gray-100">${item.weight}%</span>
+                   </div>
+               `;
+           }
+
+
+           const chestItem = items.find(item => item.name === '🎁 Baú');
+           if (chestItem) {
+               const isDiscovered = discoveredItems.has(chestItem.name);
+               const rarityText = `${chestItem.weight}%`;
+
+
+               let chestDisplayNameHtml;
+               if (isDiscovered) {
+                   const emoji = chestItem.name.split(' ')[0];
+                   const namePart = chestItem.name.substring(emoji.length).trim();
+                   chestDisplayNameHtml = `<span>${emoji} <span class="text-colorful">${namePart}</span></span>`;
+               } else {
+                   chestDisplayNameHtml = `<span class="text-colorful">? Item misterioso</span>`;
+               }
+
+
+               contentHtml += `
+                   <div class="mt-6 pt-4 border-t border-gray-600">
+                       <h3 class="text-xl font-bold mb-2 text-gray-100 text-center">--- Especiais ---</h3>
+                       <div class="flex justify-between items-center text-lg">
+                           ${chestDisplayNameHtml}
+                           <span class="font-bold text-gray-100">${rarityText}</span>
+                       </div>
+                   </div>
+               `;
+           }
+
+
+           contentHtml += '</div>';
+
+
+           modalContent.innerHTML = contentHtml;
+           infoModal.classList.remove('hidden');
+       }
+
+
+       // Nova função para exibir os valores dos itens
+       function showValues() {
+           modalTitle.textContent = 'Valores dos Minérios';
+           let valuesHtml = '';
+
+
+           const allValuableItems = Object.keys(itemCoinValues).map(itemName => {
+               return {
+                   name: itemName,
+                   value: itemCoinValues[itemName]
+               };
+           });
+
+
+           // Mapeia todos os itens definidos (mineração e baú) para fácil acesso ao peso para ordenação
+           const allDefinedItemsMap = new Map();
+           items.forEach(item => allDefinedItemsMap.set(item.name, item));
+           chestItems.forEach(item => allDefinedItemsMap.set(item.name, item));
+
+
+           const valuableItemsWithWeights = allValuableItems.map(item => {
+               const itemDefinition = allDefinedItemsMap.get(item.name);
+               return {
+                   ...item,
+                   weight: itemDefinition ? itemDefinition.weight : 0 // Adiciona o peso para ordenação
+               };
+           });
+
+
+           // Ordena os itens por raridade (peso) para consistência com o inventário
+           valuableItemsWithWeights.sort((a, b) => b.weight - a.weight);
+
+
+
+
+           if (valuableItemsWithWeights.length === 0) {
+               valuesHtml = '<p>Nenhum item com valor de conversão definido.</p>';
+           } else {
+               valuesHtml = '<div class="space-y-2">';
+               for (const item of valuableItemsWithWeights) {
+                   const isDiscovered = discoveredItems.has(item.name);
+                   const finalDisplayName = isDiscovered ? item.name : '? Item misterioso';
+
+
+                   valuesHtml += `
+                       <div class="flex justify-between items-center text-lg">
+                           <span>${finalDisplayName}</span>
+                           <span class="font-bold text-yellow-400">${item.value} Moedas</span>
+                       </div>
+                   `;
+               }
+               valuesHtml += '</div>';
+           }
+           modalContent.innerHTML = valuesHtml;
+           infoModal.classList.remove('hidden');
+       }
+
+
+
+
+       // Função para exibir o modal de conversão
+       function showConverter() {
+           modalTitle.textContent = 'Converter Itens em Moedas';
+           let conversionHtml = '';
+           const availableItems = Object.keys(inventory).filter(item => inventory[item] > 0 && itemCoinValues[item] !== undefined);
+
+
+           if (availableItems.length === 0) {
+               conversionHtml = '<p>Você não tem itens para converter.</p>';
+           } else {
+               conversionHtml = `
+                   <div class="space-y-4">
+                       <div class="flex flex-col items-start">
+                           <label for="itemSelect" class="mb-2 text-gray-200">Item:</label>
+                           <select id="itemSelect" class="w-full p-2 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400">
+                               ${availableItems.map(item => `<option value="${item}">${item}</option>`).join('')}
+                           </select>
+                       </div>
+                       <div class="flex flex-col items-start">
+                           <label for="quantityInput" class="mb-2 text-gray-200">Quantidade:</label>
+                           <input type="number" id="quantityInput" min="1" value="1" class="w-full p-2 rounded-md bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400">
+                           <p id="currentQuantityDisplay" class="text-gray-400 text-sm mt-1"></p>
+                       </div>
+                       <p id="conversionMessage" class="text-red-400 hidden"></p>
+
+
+                       <!-- Botões de Converter e Converter Tudo com seus displays de resultado -->
+                       <div class="flex justify-center space-x-4 w-full">
+                           <div class="flex flex-col items-center">
+                               <button id="confirmConvertButton"
+                                       class="bg-green-500 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition duration-300 ease-in-out">
+                                   Converter
+                               </button>
+                               <p id="estimatedCoinsDisplay" class="text-yellow-400 text-sm font-bold mt-1">0 💰</p>
+                           </div>
+                           <div class="flex flex-col items-center">
+                               <button id="convertAllButton"
+                                       class="bg-blue-500 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-400 focus:ring-opacity-50 transition duration-300 ease-in-out">
+                                   Converter Tudo
+                               </button>
+                               <p id="estimatedCoinsAllDisplay" class="text-yellow-400 text-sm font-bold mt-1">0 💰</p>
+                           </div>
+                       </div>
+                   </div>
+               `;
+           }
+           modalContent.innerHTML = conversionHtml;
+           infoModal.classList.remove('hidden');
+
+
+           // Referências aos elementos dentro do modal (precisam ser re-obtidas após a renderização)
+           const itemSelect = document.getElementById('itemSelect');
+           const quantityInput = document.getElementById('quantityInput');
+           const currentQuantityDisplay = document.getElementById('currentQuantityDisplay');
+           const estimatedCoinsDisplay = document.getElementById('estimatedCoinsDisplay');
+           const estimatedCoinsAllDisplay = document.getElementById('estimatedCoinsAllDisplay'); // Novo display
+           const confirmConvertButton = document.getElementById('confirmConvertButton');
+           const convertAllButton = document.getElementById('convertAllButton'); // Novo botão
+           const conversionMessage = document.getElementById('conversionMessage');
+
+
+           // Função para atualizar as informações de conversão
+           function updateConversionInfo() {
+               const selectedItemName = itemSelect.value;
+               const quantityToConvert = parseInt(quantityInput.value);
+               const currentItemCount = inventory[selectedItemName] || 0;
+               const valuePerItem = itemCoinValues[selectedItemName] || 0;
+
+
+               const totalCoinsGained = valuePerItem * quantityToConvert;
+              
+               // Calcular o total de moedas para "Converter Tudo" de TODOS os itens
+               let totalCoinsGainedAllInventory = 0;
+               let hasConvertibleItemsInInventory = false;
+               for (const item in inventory) {
+                   if (inventory[item] > 0 && itemCoinValues[item] !== undefined) {
+                       totalCoinsGainedAllInventory += inventory[item] * itemCoinValues[item];
+                       hasConvertibleItemsInInventory = true;
+                   }
+               }
+
+
+               currentQuantityDisplay.textContent = `Você tem: ${currentItemCount}X`;
+               estimatedCoinsDisplay.textContent = `${totalCoinsGained} �`;
+               estimatedCoinsAllDisplay.textContent = `${totalCoinsGainedAllInventory} 💰`; // Atualiza para o total de todos os itens
+
+
+               // Validação visual da quantidade para o botão "Converter"
+               if (quantityToConvert > currentItemCount || quantityToConvert <= 0 || isNaN(quantityToConvert)) {
+                   quantityInput.classList.add('input-error');
+                   confirmConvertButton.disabled = true;
+                   if (quantityToConvert > currentItemCount) {
+                       conversionMessage.textContent = 'Quantidade maior que a disponível!';
+                   } else if (quantityToConvert <= 0 || isNaN(quantityToConvert)) {
+                        conversionMessage.textContent = 'Quantidade inválida!';
+                   }
+                   conversionMessage.classList.remove('hidden', 'text-green-400');
+                   conversionMessage.classList.add('text-red-400');
+               } else {
+                   quantityInput.classList.remove('input-error');
+                   confirmConvertButton.disabled = false;
+                   conversionMessage.classList.add('hidden'); // Esconde a mensagem de erro se for válido
+               }
+
+
+               // Habilita/Desabilita o botão "Converter Tudo"
+               if (!hasConvertibleItemsInInventory) { // Verifica se há QUALQUER item convertível
+                   convertAllButton.disabled = true;
+               } else {
+                   convertAllButton.disabled = false;
+               }
+           }
+
+
+           // Adiciona event listeners
+           if (itemSelect) itemSelect.addEventListener('change', updateConversionInfo);
+           if (quantityInput) quantityInput.addEventListener('input', updateConversionInfo);
+           if (confirmConvertButton) confirmConvertButton.addEventListener('click', handleConvert);
+           if (convertAllButton) convertAllButton.addEventListener('click', handleConvertAll);
+
+
+           // Inicializa as informações ao abrir o modal
+           if (itemSelect && quantityInput) {
+               updateConversionInfo();
+           }
+       }
+
+
+       // Função para lidar com a conversão de itens (quantidade específica)
+       function handleConvert() {
+           const itemSelect = document.getElementById('itemSelect');
+           const quantityInput = document.getElementById('quantityInput');
+           const conversionMessage = document.getElementById('conversionMessage');
+
+
+           const selectedItemName = itemSelect.value;
+           const quantityToConvert = parseInt(quantityInput.value);
+           const currentItemCount = inventory[selectedItemName] || 0;
+
+
+           // Validações (redundantes, mas importantes para a lógica de conversão final)
+           if (!selectedItemName || itemCoinValues[selectedItemName] === undefined) {
+               conversionMessage.textContent = 'Selecione um item válido.';
+               conversionMessage.classList.remove('hidden');
+               conversionMessage.classList.add('text-red-400');
+               return;
+           }
+           if (isNaN(quantityToConvert) || quantityToConvert <= 0) {
+               conversionMessage.textContent = 'Quantidade inválida.';
+               conversionMessage.classList.remove('hidden');
+               conversionMessage.classList.add('text-red-400');
+               return;
+           }
+           if (currentItemCount < quantityToConvert) {
+               conversionMessage.textContent = `Você não tem ${quantityToConvert} de ${selectedItemName}. Você tem ${currentItemCount}.`;
+               conversionMessage.classList.remove('hidden');
+               conversionMessage.classList.add('text-red-400');
+               return;
+           }
+
+
+           const valuePerItem = itemCoinValues[selectedItemName];
+           const totalCoinsGained = valuePerItem * quantityToConvert;
+
+
+           // Realiza a conversão
+           inventory[selectedItemName] -= quantityToConvert;
+           if (inventory[selectedItemName] === 0) {
+               delete inventory[selectedItemName];
+           }
+           coins += totalCoinsGained;
+           updateCoinDisplay();
+           saveGameData(); // Salva os dados após a conversão
+
+
+           updateResultDisplay(`Convertido ${quantityToConvert} ${selectedItemName} por ${totalCoinsGained} Moedas!`, true);
+           closeModal(); // Fecha o modal após a conversão
+       }
+
+
+       // Nova função para lidar com a conversão de TODOS os itens do inventário
+       function handleConvertAll() {
+           let totalCoinsGainedAll = 0;
+           let convertedItemsCount = 0; // Para verificar se algo foi convertido
+
+
+           // Cria uma cópia das chaves do inventário para iterar, pois o inventário será modificado
+           const itemsToConvert = Object.keys(inventory);
+
+
+           for (const itemName of itemsToConvert) {
+               // Verifica se o item existe no inventário e tem um valor de conversão
+               if (inventory[itemName] > 0 && itemCoinValues[itemName] !== undefined) {
+                   const quantity = inventory[itemName];
+                   const valuePerItem = itemCoinValues[itemName];
+                   const coinsForThisItem = valuePerItem * quantity;
+
+
+                   totalCoinsGainedAll += coinsForThisItem;
+                   convertedItemsCount++;
+
+
+                   delete inventory[itemName]; // Remove o item do inventário
+               }
+           }
+
+
+           if (convertedItemsCount > 0) {
+               coins += totalCoinsGainedAll;
+               updateCoinDisplay();
+               saveGameData(); // Salva os dados após a conversão de todos os itens
+
+
+               updateResultDisplay('Você converteu tudo!', true); // Mensagem simplificada
+           } else {
+               updateResultDisplay('Nenhum item para converter.', true);
+           }
+
+
+           closeModal(); // Fecha o modal após a conversão
+       }
+
+
+
+
+       // Função para fechar o modal genérico
+       function closeModal() {
+           infoModal.classList.add('hidden');
+           mineButton.disabled = false;
+           inventoryButton.disabled = false;
+           raritiesButton.disabled = false;
+           convertButton.disabled = false;
+           valuesButton.disabled = false; // Reabilita o botão de valores
+       }
+
+
+       // Funções para alternar o layout dos botões secundários
+       function setDesktopLayout() {
+           secondaryButtonsContainer.classList.remove('grid', 'grid-cols-2', 'gap-4', 'w-full'); // Remove w-full do container
+           secondaryButtonsContainer.classList.add('flex', 'flex-row', 'justify-center', 'space-x-6', 'px-4');
+           // Remove w-full de todos os botões para que eles não ocupem a largura total em desktop
+           secondaryButtonsContainer.querySelectorAll('button').forEach(btn => btn.classList.remove('w-full'));
+       }
+
+
+       function setMobileLayout() {
+           secondaryButtonsContainer.classList.remove('flex', 'flex-row', 'justify-center', 'space-x-6', 'px-4'); // Remove classes de desktop
+           secondaryButtonsContainer.classList.add('grid', 'grid-cols-2', 'gap-4', 'w-full'); // Adiciona w-full ao container
+           // Adiciona w-full a todos os botões para que ocupem a largura total dentro de suas células da grade
+           secondaryButtonsContainer.querySelectorAll('button').forEach(btn => btn.classList.add('w-full'));
+       }
+
+
+
+
+       // Adiciona ouvintes de evento
+       mineButton.addEventListener('click', mine);
+       inventoryButton.addEventListener('click', showInventory);
+       raritiesButton.addEventListener('click', showRarities);
+       convertButton.addEventListener('click', showConverter);
+       valuesButton.addEventListener('click', showValues);
+       closeModalButton.addEventListener('click', closeModal);
+       ignoreChestButton.addEventListener('click', handleIgnoreChest);
+       buyChestButton.addEventListener('click', handleBuyChest);
+
+
+       // Ouvintes para os novos botões de layout
+       computerButton.addEventListener('click', setDesktopLayout);
+       mobileButton.addEventListener('click', setMobileLayout);
+
+
+       // Fecha o modal ao clicar fora dele
+       infoModal.addEventListener('click', (event) => {
+           if (event.target === infoModal) {
+               closeModal();
+           }
+       });
+   </script>
 </body>
 </html>
+�
+
