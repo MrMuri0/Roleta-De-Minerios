@@ -164,6 +164,8 @@
         let setDoc;
         let onSnapshot;
 
+        let gameDataLoaded = false; // Nova flag para controlar o carregamento de dados
+
         // Aguarda o carregamento do DOM e das variáveis do Firebase
         window.onload = async () => {
             // Atribui as variáveis globais do Firebase
@@ -178,7 +180,14 @@
             setDoc = window.setDoc;
             onSnapshot = window.onSnapshot;
 
-            // Autentica o usuário
+            // Garante que as instâncias do Firebase estejam disponíveis
+            if (!firestoreDb || !firebaseAuth) {
+                console.error("Firebase não totalmente inicializado. Tentando novamente em 100ms...");
+                setTimeout(window.onload, 100); // Tenta novamente a inicialização
+                return;
+            }
+
+            // Autentica o usuário e carrega os dados do jogo
             onAuthStateChanged(firebaseAuth, async (user) => {
                 if (!user) {
                     try {
@@ -191,8 +200,11 @@
                         console.error("Erro na autenticação Firebase:", error);
                     }
                 }
-                // Carrega os dados do jogo após a autenticação
-                loadGameData();
+                // Carrega os dados do jogo apenas uma vez após a autenticação ser confirmada
+                if (user && !gameDataLoaded) {
+                    loadGameData();
+                    gameDataLoaded = true;
+                }
             });
 
             // Inicializa a exibição de moedas ao carregar a página
@@ -242,7 +254,7 @@
             '🔩 Ferro': 7.5,
             '⬜ Quartzo': 8,
             '🟣 Ametista': 10,
-            '🟨 Ouro': 15,
+            '� Ouro': 15,
             '💎 Diamante': 20,
             '🟢 Esmeralda': 30,
             '🔴 Rubi': 50,
@@ -321,36 +333,31 @@
 
         // Função para carregar os dados do jogo do Firestore
         function loadGameData() {
-            if (!firestoreDb) {
-                console.warn("Firestore não inicializado. Não é possível carregar os dados.");
+            if (!firestoreDb || !firebaseAuth.currentUser) {
+                console.warn("Firestore ou usuário não autenticado. Não é possível carregar os dados. Tentando novamente...");
+                // Pode adicionar um pequeno atraso e tentar novamente se for um problema de timing
+                setTimeout(loadGameData, 500);
                 return;
             }
 
-            // Garante que o usuário esteja autenticado antes de tentar carregar
-            onAuthStateChanged(firebaseAuth, (user) => {
-                if (user) {
-                    const userId = user.uid;
-                    const gameDocRef = doc(firestoreDb, `artifacts/${appId}/users/${userId}/gameData/current`);
+            const userId = firebaseAuth.currentUser.uid;
+            const gameDocRef = doc(firestoreDb, `artifacts/${appId}/users/${userId}/gameData/current`);
 
-                    onSnapshot(gameDocRef, (docSnap) => {
-                        if (docSnap.exists()) {
-                            const data = docSnap.data();
-                            inventory = data.inventory || {};
-                            coins = data.coins || 0;
-                            discoveredItems = new Set(data.discoveredItems || []); // Converte Array para Set ao carregar
-                            updateCoinDisplay();
-                            console.log("Dados do jogo carregados com sucesso!");
-                        } else {
-                            console.log("Nenhum dado de jogo encontrado para este usuário. Iniciando novo jogo.");
-                            // Se não houver dados, salva o estado inicial para criar o documento
-                            saveGameData();
-                        }
-                    }, (error) => {
-                        console.error("Erro ao carregar dados do jogo em tempo real:", error);
-                    });
+            onSnapshot(gameDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    inventory = data.inventory || {};
+                    coins = data.coins || 0;
+                    discoveredItems = new Set(data.discoveredItems || []); // Converte Array para Set ao carregar
+                    updateCoinDisplay();
+                    console.log("Dados do jogo carregados com sucesso!");
                 } else {
-                    console.log("Aguardando autenticação para carregar dados do jogo.");
+                    console.log("Nenhum dado de jogo encontrado para este usuário. Iniciando novo jogo.");
+                    // Se não houver dados, salva o estado inicial para criar o documento
+                    saveGameData();
                 }
+            }, (error) => {
+                console.error("Erro ao carregar dados do jogo em tempo real:", error);
             });
         }
 
@@ -920,3 +927,4 @@
     </script>
 </body>
 </html>
+�
