@@ -460,9 +460,9 @@
                     mineButton.disabled = true; // Mantém o botão de mineração desabilitado até interagir com o baú
                     isMining = false; // Libera o flag de mineração para permitir interação com o baú
                 } else {
-                    updateResultDisplay(`Você minerou: ${finalItem}`, false);
                     inventory[finalItem] = (inventory[finalItem] || 0) + 1; // Adiciona 1 ao inventário
                     discoveredItems.add(finalItem); // Adiciona o item aos descobertos
+                    updateResultDisplay(`Você minerou: ${finalItem}`, false);
                     saveGameData(); // Salva os dados após a mineração
                     // Cooldown de 0.5 segundo para o botão de mineração
                     setTimeout(() => {
@@ -700,14 +700,14 @@
                         <div class="flex justify-center space-x-4 w-full">
                             <div class="flex flex-col items-center">
                                 <button id="confirmConvertButton"
-                                        class="bg-green-500 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition duration-300 ease-in-out">
+                                        class="bg-green-500 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-400 focus:ring-opacity-50 transition duration-300 ease-in-out text-sm">
                                     Converter
                                 </button>
                                 <p id="estimatedCoinsDisplay" class="text-yellow-400 text-sm font-bold mt-1">0 💰</p>
                             </div>
                             <div class="flex flex-col items-center">
                                 <button id="convertAllButton"
-                                        class="bg-blue-500 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-400 focus:ring-opacity-50 transition duration-300 ease-in-out">
+                                        class="bg-blue-500 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none focus:ring-4 focus:ring-blue-400 focus:ring-opacity-50 transition duration-300 ease-in-out text-sm">
                                     Converter Tudo
                                 </button>
                                 <p id="estimatedCoinsAllDisplay" class="text-yellow-400 text-sm font-bold mt-1">0 💰</p>
