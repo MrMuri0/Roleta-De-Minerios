@@ -42,23 +42,36 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Variáveis globais para Firebase (serão preenchidas pelo ambiente Canvas)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // ====================================================================
+        // IMPORTANTE: COLE AQUI SUA CONFIGURAÇÃO DO FIREBASE
+        // Substitua o objeto vazio por sua configuração pessoal
+        // Exemplo: const myFirebaseConfig = { apiKey: "...", authDomain: "..." };
+        // ====================================================================
+        const myFirebaseConfig = {};
 
-        // Inicializa o Firebase apenas se a configuração existir
+        // Variáveis globais do ambiente Canvas
+        const canvasAppId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const canvasFirebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const canvasInitialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
         let firebaseApp = null;
         let firestoreDb = null;
         let firebaseAuth = null;
         let isFirebaseEnabled = false;
+        let useCanvasAuth = false;
 
-        if (Object.keys(firebaseConfig).length > 0) {
+        // Tenta usar a configuração do Firebase do Canvas, se não, usa a sua
+        const activeFirebaseConfig = Object.keys(canvasFirebaseConfig).length > 0 ? canvasFirebaseConfig : myFirebaseConfig;
+        const activeAppId = Object.keys(canvasFirebaseConfig).length > 0 ? canvasAppId : 'your-app-id'; // Use um ID estático para seu app
+
+        if (Object.keys(activeFirebaseConfig).length > 0) {
             try {
-                firebaseApp = initializeApp(firebaseConfig);
+                firebaseApp = initializeApp(activeFirebaseConfig);
                 firestoreDb = getFirestore(firebaseApp);
                 firebaseAuth = getAuth(firebaseApp);
                 isFirebaseEnabled = true;
+                // Se a configuração do Canvas existe, sabemos que estamos no Canvas
+                useCanvasAuth = Object.keys(canvasFirebaseConfig).length > 0;
                 console.log("Firebase is configured and enabled.");
             } catch (error) {
                 console.error("Failed to initialize Firebase:", error);
@@ -73,8 +86,8 @@
         window.firebaseApp = firebaseApp;
         window.firestoreDb = firestoreDb;
         window.firebaseAuth = firebaseAuth;
-        window.initialAuthToken = initialAuthToken;
-        window.appId = appId;
+        window.canvasInitialAuthToken = canvasInitialAuthToken;
+        window.activeAppId = activeAppId;
         window.onAuthStateChanged = onAuthStateChanged;
         window.signInAnonymously = signInAnonymously;
         window.signInWithCustomToken = signInWithCustomToken;
@@ -82,6 +95,7 @@
         window.setDoc = setDoc;
         window.onSnapshot = onSnapshot;
         window.isFirebaseEnabled = isFirebaseEnabled;
+        window.useCanvasAuth = useCanvasAuth;
     </script>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
@@ -183,8 +197,8 @@
         // Variáveis globais do Firebase (exportadas do script 'module' acima)
         let firestoreDb;
         let firebaseAuth;
-        let initialAuthToken;
-        let appId;
+        let canvasInitialAuthToken;
+        let activeAppId;
         let onAuthStateChanged;
         let signInAnonymously;
         let signInWithCustomToken;
@@ -192,6 +206,7 @@
         let setDoc;
         let onSnapshot;
         let isFirebaseEnabled;
+        let useCanvasAuth;
 
         let gameDataLoaded = false; // Nova flag para controlar o carregamento de dados
 
@@ -227,8 +242,8 @@
             // Atribui as variáveis globais do Firebase e a nova flag
             firestoreDb = window.firestoreDb;
             firebaseAuth = window.firebaseAuth;
-            initialAuthToken = window.initialAuthToken;
-            appId = window.appId;
+            canvasInitialAuthToken = window.canvasInitialAuthToken;
+            activeAppId = window.activeAppId;
             onAuthStateChanged = window.onAuthStateChanged;
             signInAnonymously = window.signInAnonymously;
             signInWithCustomToken = window.signInWithCustomToken;
@@ -236,6 +251,7 @@
             setDoc = window.setDoc;
             onSnapshot = window.onSnapshot;
             isFirebaseEnabled = window.isFirebaseEnabled;
+            useCanvasAuth = window.useCanvasAuth;
 
             // Se o Firebase estiver desabilitado, entra em modo local imediatamente
             if (!isFirebaseEnabled) {
@@ -258,12 +274,18 @@
                 } else {
                     console.log("No user authenticated. Attempting anonymous sign-in...");
                     try {
-                        if (initialAuthToken) {
-                            await signInWithCustomToken(firebaseAuth, initialAuthToken);
-                            console.log("Signed in with custom token successfully.");
+                        if (useCanvasAuth) {
+                            if (canvasInitialAuthToken) {
+                                await signInWithCustomToken(firebaseAuth, canvasInitialAuthToken);
+                                console.log("Signed in with custom token successfully.");
+                            } else {
+                                await signInAnonymously(firebaseAuth);
+                                console.log("Signed in anonymously successfully.");
+                            }
                         } else {
+                             // Para o modo "offline", sempre tentamos o login anônimo
                             await signInAnonymously(firebaseAuth);
-                            console.log("Signed in anonymously successfully.");
+                            console.log("Signed in anonymously for external app successfully.");
                         }
                     } catch (error) {
                         console.error("Authentication Error:", error);
@@ -367,12 +389,8 @@
 
         // Função para salvar os dados do jogo no Firestore (com debouncing)
         function saveGameData() {
-            if (!isFirebaseEnabled) {
-                console.warn("SAVE: Firebase não está habilitado. Salvamento cancelado.");
-                return;
-            }
-            if (!firestoreDb || !firebaseAuth.currentUser) {
-                console.warn("SAVE: Firestore ou usuário não autenticado. Não é possível salvar os dados.");
+            if (!isFirebaseEnabled || !firebaseAuth.currentUser) {
+                console.warn("SAVE: Firebase não está habilitado ou usuário não autenticado. Salvamento cancelado.");
                 return;
             }
             console.log(`SAVE: Triggering save for user ${firebaseAuth.currentUser.uid}...`);
@@ -383,7 +401,7 @@
 
             saveTimeoutId = setTimeout(async () => {
                 const userId = firebaseAuth.currentUser.uid;
-                const gameDocRef = doc(firestoreDb, `artifacts/${appId}/users/${userId}/gameData/current`);
+                const gameDocRef = doc(firestoreDb, `artifacts/${activeAppId}/users/${userId}/gameData/current`);
                 try {
                     await setDoc(gameDocRef, {
                         inventory: inventory,
@@ -399,19 +417,14 @@
 
         // Função para carregar os dados do jogo do Firestore
         function loadGameData() {
-            if (!isFirebaseEnabled) {
-                console.warn("LOAD: Firebase não está habilitado. Carregamento cancelado.");
-                return;
-            }
-            if (!firestoreDb || !firebaseAuth.currentUser) {
-                console.warn("LOAD: Firestore or user not authenticated. Retrying in 500ms...");
-                setTimeout(loadGameData, 500); // Tenta novamente após um pequeno atraso
+            if (!isFirebaseEnabled || !firebaseAuth.currentUser) {
+                console.warn("LOAD: Firestore ou usuário não autenticado. Salvamento cancelado.");
                 return;
             }
             console.log(`LOAD: Attempting to load data for user ${firebaseAuth.currentUser.uid}...`);
 
             const userId = firebaseAuth.currentUser.uid;
-            const gameDocRef = doc(firestoreDb, `artifacts/${appId}/users/${userId}/gameData/current`);
+            const gameDocRef = doc(firestoreDb, `artifacts/${activeAppId}/users/${userId}/gameData/current`);
 
             onSnapshot(gameDocRef, (docSnap) => {
                 if (docSnap.exists()) {
