@@ -36,7 +36,7 @@
             font-size: 0.65rem; /* Um pouco menor que text-xs (0.75rem) */
         }
     </style>
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDKs (opcional, só será usado se a configuração estiver disponível) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -47,15 +47,32 @@
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        // Inicializa o Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+        // Inicializa o Firebase apenas se a configuração existir
+        let firebaseApp = null;
+        let firestoreDb = null;
+        let firebaseAuth = null;
+        let isFirebaseEnabled = false;
 
-        // Exporta as instâncias para uso no script principal
-        window.firebaseApp = app;
-        window.firestoreDb = db;
-        window.firebaseAuth = auth;
+        if (Object.keys(firebaseConfig).length > 0) {
+            try {
+                firebaseApp = initializeApp(firebaseConfig);
+                firestoreDb = getFirestore(firebaseApp);
+                firebaseAuth = getAuth(firebaseApp);
+                isFirebaseEnabled = true;
+                console.log("Firebase is configured and enabled.");
+            } catch (error) {
+                console.error("Failed to initialize Firebase:", error);
+                isFirebaseEnabled = false;
+            }
+        } else {
+            console.warn("Firebase configuration not found. Running in local-only mode. Progress will not be saved.");
+            isFirebaseEnabled = false;
+        }
+
+        // Exporta as instâncias e a flag para uso no script principal
+        window.firebaseApp = firebaseApp;
+        window.firestoreDb = firestoreDb;
+        window.firebaseAuth = firebaseAuth;
         window.initialAuthToken = initialAuthToken;
         window.appId = appId;
         window.onAuthStateChanged = onAuthStateChanged;
@@ -64,6 +81,7 @@
         window.doc = doc;
         window.setDoc = setDoc;
         window.onSnapshot = onSnapshot;
+        window.isFirebaseEnabled = isFirebaseEnabled;
     </script>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
@@ -112,7 +130,7 @@
 
         <!-- Mostrador do Item Obtido -->
         <div class="mt-8 p-4 bg-gray-700 rounded-lg text-lg font-semibold text-gray-200">
-            <p id="resultDisplay" class="whitespace-nowrap overflow-hidden">Carregando dados...</p>
+            <p id="resultDisplay" class="whitespace-nowrap overflow-hidden">Carregando...</p>
         </div>
 
         <!-- Opções do Baú (movido para cima) -->
@@ -173,6 +191,7 @@
         let doc;
         let setDoc;
         let onSnapshot;
+        let isFirebaseEnabled;
 
         let gameDataLoaded = false; // Nova flag para controlar o carregamento de dados
 
@@ -193,10 +212,19 @@
             valuesButton.disabled = false;
         }
 
+        // Função para executar o jogo em modo local (sem salvamento)
+        function runGameInLocalMode() {
+            console.warn("Running game in local mode. Data will not be saved.");
+            userIdDisplay.textContent = "Salvamento Desativado";
+            updateResultDisplay('Salvamento desativado. Jogue à vontade!');
+            enableGameButtons();
+            gameDataLoaded = true;
+        }
+
         // Aguarda o carregamento do DOM e das variáveis do Firebase
         window.onload = async () => {
-            console.log("DOM loaded. Initializing Firebase variables...");
-            // Atribui as variáveis globais do Firebase
+            console.log("DOM loaded. Initializing...");
+            // Atribui as variáveis globais do Firebase e a nova flag
             firestoreDb = window.firestoreDb;
             firebaseAuth = window.firebaseAuth;
             initialAuthToken = window.initialAuthToken;
@@ -207,14 +235,15 @@
             doc = window.doc;
             setDoc = window.setDoc;
             onSnapshot = window.onSnapshot;
+            isFirebaseEnabled = window.isFirebaseEnabled;
 
-            // Garante que as instâncias do Firebase estejam disponíveis antes de prosseguir
-            if (!firestoreDb || !firebaseAuth) {
-                console.error("Firebase instances not available. Retrying initialization in 100ms...");
-                setTimeout(window.onload, 100);
+            // Se o Firebase estiver desabilitado, entra em modo local imediatamente
+            if (!isFirebaseEnabled) {
+                runGameInLocalMode();
                 return;
             }
-            console.log("Firebase instances available. Starting authentication process...");
+
+            console.log("Firebase is enabled. Starting authentication process...");
 
             // Autentica o usuário e carrega os dados do jogo
             onAuthStateChanged(firebaseAuth, async (user) => {
@@ -338,6 +367,10 @@
 
         // Função para salvar os dados do jogo no Firestore (com debouncing)
         function saveGameData() {
+            if (!isFirebaseEnabled) {
+                console.warn("SAVE: Firebase não está habilitado. Salvamento cancelado.");
+                return;
+            }
             if (!firestoreDb || !firebaseAuth.currentUser) {
                 console.warn("SAVE: Firestore ou usuário não autenticado. Não é possível salvar os dados.");
                 return;
@@ -366,6 +399,10 @@
 
         // Função para carregar os dados do jogo do Firestore
         function loadGameData() {
+            if (!isFirebaseEnabled) {
+                console.warn("LOAD: Firebase não está habilitado. Carregamento cancelado.");
+                return;
+            }
             if (!firestoreDb || !firebaseAuth.currentUser) {
                 console.warn("LOAD: Firestore or user not authenticated. Retrying in 500ms...");
                 setTimeout(loadGameData, 500); // Tenta novamente após um pequeno atraso
@@ -791,7 +828,7 @@
                 }
 
                 currentQuantityDisplay.textContent = `Você tem: ${currentItemCount}X`;
-                estimatedCoinsDisplay.textContent = `${totalCoinsGained} �`;
+                estimatedCoinsDisplay.textContent = `${totalCoinsGained} 💰`;
                 estimatedCoinsAllDisplay.textContent = `${totalCoinsGainedAllInventory} 💰`; // Atualiza para o total de todos os itens
 
                 // Validação visual da quantidade para o botão "Converter"
