@@ -58,12 +58,12 @@
         window.firebaseAuth = auth;
         window.initialAuthToken = initialAuthToken;
         window.appId = appId;
-        window.onAuthStateChanged = onAuthStateChanged; // Exporta para o script principal
-        window.signInAnonymously = signInAnonymously; // Exporta para o script principal
-        window.signInWithCustomToken = signInWithCustomToken; // Exporta para o script principal
-        window.doc = doc; // Exporta para o script principal
-        window.setDoc = setDoc; // Exporta para o script principal
-        window.onSnapshot = onSnapshot; // Exporta para o script principal
+        window.onAuthStateChanged = onAuthStateChanged;
+        window.signInAnonymously = signInAnonymously;
+        window.signInWithCustomToken = signInWithCustomToken;
+        window.doc = doc;
+        window.setDoc = setDoc;
+        window.onSnapshot = onSnapshot;
     </script>
 </head>
 <body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
@@ -79,7 +79,8 @@
         <div class="flex flex-col items-center mb-8">
             <!-- Botão de Minerar Aumentado -->
             <button id="mineButton"
-                    class="bg-white text-gray-900 font-bold py-4 px-10 rounded-full shadow-lg hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105 mb-4">
+                    class="bg-white text-gray-900 font-bold py-4 px-10 rounded-full shadow-lg hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105 mb-4"
+                    disabled>
                 Minerar
             </button>
 
@@ -87,19 +88,23 @@
             <!-- As classes aqui serão manipuladas via JavaScript para alternar entre layouts -->
             <div id="secondaryButtonsContainer" class="flex flex-row justify-center space-x-6 px-4">
                 <button id="convertButton"
-                        class="bg-gray-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105">
+                        class="bg-gray-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105"
+                        disabled>
                     Converter
                 </button>
                 <button id="inventoryButton"
-                        class="bg-gray-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105">
+                        class="bg-gray-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105"
+                        disabled>
                     Inventário
                 </button>
                 <button id="raritiesButton"
-                        class="bg-gray-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105">
+                        class="bg-gray-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105"
+                        disabled>
                     Raridades
                 </button>
                 <button id="valuesButton"
-                        class="bg-gray-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105">
+                        class="bg-gray-600 text-white font-bold py-2 px-6 rounded-full shadow-lg hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-400 focus:ring-opacity-50 transition duration-300 ease-in-out transform hover:scale-105"
+                        disabled>
                     Valores
                 </button>
             </div>
@@ -107,7 +112,7 @@
 
         <!-- Mostrador do Item Obtido -->
         <div class="mt-8 p-4 bg-gray-700 rounded-lg text-lg font-semibold text-gray-200">
-            <p id="resultDisplay" class="whitespace-nowrap overflow-hidden">Clique em "Minerar" para começar!</p>
+            <p id="resultDisplay" class="whitespace-nowrap overflow-hidden">Carregando dados...</p>
         </div>
 
         <!-- Opções do Baú (movido para cima) -->
@@ -133,6 +138,11 @@
             <button id="mobileButton" class="bg-gray-600 text-white font-bold py-2 px-4 rounded-full shadow-lg hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-400 transition duration-300 ease-in-out">
                 Celular
             </button>
+        </div>
+
+        <!-- Display do ID do Usuário para depuração -->
+        <div class="mt-4 text-xs text-gray-400">
+            ID do Usuário: <span id="userIdDisplay">Carregando...</span>
         </div>
     </div>
 
@@ -166,8 +176,26 @@
 
         let gameDataLoaded = false; // Nova flag para controlar o carregamento de dados
 
+        // Referência aos elementos de exibição
+        const userIdDisplay = document.getElementById('userIdDisplay');
+        const mineButton = document.getElementById('mineButton');
+        const inventoryButton = document.getElementById('inventoryButton');
+        const raritiesButton = document.getElementById('raritiesButton');
+        const convertButton = document.getElementById('convertButton');
+        const valuesButton = document.getElementById('valuesButton');
+
+        // Função para habilitar os botões do jogo
+        function enableGameButtons() {
+            mineButton.disabled = false;
+            inventoryButton.disabled = false;
+            raritiesButton.disabled = false;
+            convertButton.disabled = false;
+            valuesButton.disabled = false;
+        }
+
         // Aguarda o carregamento do DOM e das variáveis do Firebase
         window.onload = async () => {
+            console.log("DOM loaded. Initializing Firebase variables...");
             // Atribui as variáveis globais do Firebase
             firestoreDb = window.firestoreDb;
             firebaseAuth = window.firebaseAuth;
@@ -180,30 +208,39 @@
             setDoc = window.setDoc;
             onSnapshot = window.onSnapshot;
 
-            // Garante que as instâncias do Firebase estejam disponíveis
+            // Garante que as instâncias do Firebase estejam disponíveis antes de prosseguir
             if (!firestoreDb || !firebaseAuth) {
-                console.error("Firebase não totalmente inicializado. Tentando novamente em 100ms...");
-                setTimeout(window.onload, 100); // Tenta novamente a inicialização
+                console.error("Firebase instances not available. Retrying initialization in 100ms...");
+                setTimeout(window.onload, 100);
                 return;
             }
+            console.log("Firebase instances available. Starting authentication process...");
 
             // Autentica o usuário e carrega os dados do jogo
             onAuthStateChanged(firebaseAuth, async (user) => {
-                if (!user) {
+                if (user) {
+                    console.log(`User authenticated with ID: ${user.uid}`);
+                    userIdDisplay.textContent = user.uid; // Exibe o ID do usuário
+                    // Carrega os dados do jogo apenas uma vez após a autenticação ser confirmada
+                    if (!gameDataLoaded) {
+                        loadGameData();
+                        gameDataLoaded = true;
+                    }
+                } else {
+                    console.log("No user authenticated. Attempting anonymous sign-in...");
                     try {
                         if (initialAuthToken) {
                             await signInWithCustomToken(firebaseAuth, initialAuthToken);
+                            console.log("Signed in with custom token successfully.");
                         } else {
                             await signInAnonymously(firebaseAuth);
+                            console.log("Signed in anonymously successfully.");
                         }
                     } catch (error) {
-                        console.error("Erro na autenticação Firebase:", error);
+                        console.error("Authentication Error:", error);
+                        userIdDisplay.textContent = "Erro de autenticação";
+                        updateResultDisplay('Erro ao conectar ao servidor. O progresso não será salvo.');
                     }
-                }
-                // Carrega os dados do jogo apenas uma vez após a autenticação ser confirmada
-                if (user && !gameDataLoaded) {
-                    loadGameData();
-                    gameDataLoaded = true;
                 }
             });
 
@@ -254,7 +291,7 @@
             '🔩 Ferro': 7.5,
             '⬜ Quartzo': 8,
             '🟣 Ametista': 10,
-            '� Ouro': 15,
+            '🟨 Ouro': 15,
             '💎 Diamante': 20,
             '🟢 Esmeralda': 30,
             '🔴 Rubi': 50,
@@ -270,11 +307,6 @@
 
 
         // Referências aos elementos HTML
-        const mineButton = document.getElementById('mineButton');
-        const inventoryButton = document.getElementById('inventoryButton');
-        const raritiesButton = document.getElementById('raritiesButton');
-        const convertButton = document.getElementById('convertButton');
-        const valuesButton = document.getElementById('valuesButton');
         const resultDisplay = document.getElementById('resultDisplay');
         const infoModal = document.getElementById('infoModal');
         const modalTitle = document.getElementById('modalTitle');
@@ -307,9 +339,10 @@
         // Função para salvar os dados do jogo no Firestore (com debouncing)
         function saveGameData() {
             if (!firestoreDb || !firebaseAuth.currentUser) {
-                console.warn("Firestore ou usuário não autenticado. Não é possível salvar os dados.");
+                console.warn("SAVE: Firestore ou usuário não autenticado. Não é possível salvar os dados.");
                 return;
             }
+            console.log(`SAVE: Triggering save for user ${firebaseAuth.currentUser.uid}...`);
 
             if (saveTimeoutId) {
                 clearTimeout(saveTimeoutId);
@@ -324,9 +357,9 @@
                         coins: coins,
                         discoveredItems: Array.from(discoveredItems) // Converte Set para Array para salvar
                     });
-                    console.log("Dados do jogo salvos com sucesso!");
+                    console.log("SAVE: Game data saved successfully!");
                 } catch (e) {
-                    console.error("Erro ao salvar dados do jogo:", e);
+                    console.error("SAVE: Error saving game data:", e);
                 }
             }, SAVE_DELAY);
         }
@@ -334,11 +367,11 @@
         // Função para carregar os dados do jogo do Firestore
         function loadGameData() {
             if (!firestoreDb || !firebaseAuth.currentUser) {
-                console.warn("Firestore ou usuário não autenticado. Não é possível carregar os dados. Tentando novamente...");
-                // Pode adicionar um pequeno atraso e tentar novamente se for um problema de timing
-                setTimeout(loadGameData, 500);
+                console.warn("LOAD: Firestore or user not authenticated. Retrying in 500ms...");
+                setTimeout(loadGameData, 500); // Tenta novamente após um pequeno atraso
                 return;
             }
+            console.log(`LOAD: Attempting to load data for user ${firebaseAuth.currentUser.uid}...`);
 
             const userId = firebaseAuth.currentUser.uid;
             const gameDocRef = doc(firestoreDb, `artifacts/${appId}/users/${userId}/gameData/current`);
@@ -350,14 +383,21 @@
                     coins = data.coins || 0;
                     discoveredItems = new Set(data.discoveredItems || []); // Converte Array para Set ao carregar
                     updateCoinDisplay();
-                    console.log("Dados do jogo carregados com sucesso!");
+                    enableGameButtons(); // Habilita os botões após carregar os dados
+                    updateResultDisplay(currentMainMessage);
+                    console.log("LOAD: Game data loaded successfully!");
+                    console.log("LOAD: Loaded inventory:", inventory);
+                    console.log("LOAD: Loaded coins:", coins);
                 } else {
-                    console.log("Nenhum dado de jogo encontrado para este usuário. Iniciando novo jogo.");
+                    console.log("LOAD: No game data found for this user. Starting a new game and saving initial state.");
+                    enableGameButtons(); // Habilita os botões mesmo sem dados, para começar a jogar
+                    updateResultDisplay(currentMainMessage);
                     // Se não houver dados, salva o estado inicial para criar o documento
                     saveGameData();
                 }
             }, (error) => {
-                console.error("Erro ao carregar dados do jogo em tempo real:", error);
+                console.error("LOAD: Error loading game data (realtime listener):", error);
+                updateResultDisplay('Erro ao carregar os dados do jogo. Tente recarregar.');
             });
         }
 
@@ -444,11 +484,6 @@
 
             // Desabilita o botão de mineração durante a animação
             mineButton.disabled = true;
-            // Os outros botões permanecem habilitados
-            inventoryButton.disabled = false;
-            raritiesButton.disabled = false;
-            convertButton.disabled = false;
-            valuesButton.disabled = false;
 
             updateResultDisplay(`Roletando... ${items[Math.floor(Math.random() * items.length)].name}`);
 
@@ -756,7 +791,7 @@
                 }
 
                 currentQuantityDisplay.textContent = `Você tem: ${currentItemCount}X`;
-                estimatedCoinsDisplay.textContent = `${totalCoinsGained} 💰`;
+                estimatedCoinsDisplay.textContent = `${totalCoinsGained} �`;
                 estimatedCoinsAllDisplay.textContent = `${totalCoinsGainedAllInventory} 💰`; // Atualiza para o total de todos os itens
 
                 // Validação visual da quantidade para o botão "Converter"
@@ -869,7 +904,7 @@
                 updateCoinDisplay();
                 saveGameData(); // Salva os dados após a conversão de todos os itens
 
-                updateResultDisplay('Você converteu tudo!', true); // Mensagem simplificada
+                updateResultDisplay('Você converteu tudo!', true);
             } else {
                 updateResultDisplay('Nenhum item para converter.', true);
             }
@@ -881,11 +916,6 @@
         // Função para fechar o modal genérico
         function closeModal() {
             infoModal.classList.add('hidden');
-            mineButton.disabled = false;
-            inventoryButton.disabled = false;
-            raritiesButton.disabled = false;
-            convertButton.disabled = false;
-            valuesButton.disabled = false; // Reabilita o botão de valores
         }
 
         // Funções para alternar o layout dos botões secundários
@@ -927,4 +957,3 @@
     </script>
 </body>
 </html>
-
