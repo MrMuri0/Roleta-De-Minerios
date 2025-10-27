@@ -6,12 +6,7 @@
   <title>Roleta de Minérios</title>
   <link href="https://fonts.googleapis.com/css2?family=Rubik+Iso&family=Fredoka:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background-color: #111;
       color: white;
@@ -24,7 +19,6 @@
       padding: 20px 20px 80px;
       position: relative;
     }
-
     #coinsContainer {
       position: absolute;
       bottom: 20px;
@@ -33,7 +27,6 @@
       flex-direction: column;
       align-items: flex-start;
     }
-
     #autoMinerBtn {
       margin-bottom: 8px;
       padding: 6px 12px;
@@ -44,24 +37,14 @@
       cursor: pointer;
       display: none;
     }
-
-    #autoMinerBtn.on {
-      background-color: #2ecc71;
-      color: white;
-    }
-
-    #autoMinerBtn.off {
-      background-color: #e74c3c;
-      color: white;
-    }
-
+    #autoMinerBtn.on { background-color: #2ecc71; color: white; }
+    #autoMinerBtn.off { background-color: #e74c3c; color: white; }
     #coinsDisplay {
       font-size: 1.4rem;
       font-weight: bold;
       color: gold;
       text-shadow: 0 0 6px rgba(255,215,0,0.7);
     }
-
     h1 {
       font-family: 'Rubik Iso', cursive;
       font-size: 6rem;
@@ -70,11 +53,7 @@
       line-height: 1;
       text-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
     }
-
-    #spinButtonContainer {
-      margin-bottom: 12px;
-    }
-
+    #spinButtonContainer { margin-bottom: 12px; }
     .other-buttons {
       display: flex;
       gap: 16px;
@@ -82,7 +61,6 @@
       justify-content: center;
       margin-bottom: 30px;
     }
-
     .btn {
       padding: 14px 32px;
       font-size: 1.3rem;
@@ -90,33 +68,15 @@
       border-radius: 10px;
       font-weight: 700;
       cursor: pointer;
-      transition: transform 0.2s ease, opacity 0.2s ease;
+      transition: transform 0.2s ease;
     }
-
-    #spinButton {
-      background-color: white;
-      color: #111;
-    }
-
-    #backpackButton,
-    #chancesButton,
-    #sellButton,
-    #valuesButton,
-    #shopButton {
+    #spinButton { background-color: white; color: #111; }
+    #backpackButton, #chancesButton, #sellButton, #valuesButton, #shopButton {
       background-color: #333;
       color: white;
     }
-
-    .btn:hover:not(:disabled) {
-      transform: scale(1.06);
-    }
-
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
+    .btn:hover:not(:disabled) { transform: scale(1.06); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
     #displays {
       width: 100%;
       max-width: 600px;
@@ -125,7 +85,6 @@
       gap: 16px;
       margin-bottom: 25px;
     }
-
     .display-item {
       width: 100%;
       height: 90px;
@@ -139,33 +98,13 @@
       white-space: nowrap;
       box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
-
     #chestButtons {
       display: none;
       gap: 16px;
       margin-top: 20px;
     }
-
-    #ignoreChest {
-      background-color: #e74c3c;
-      color: white;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    #openChest {
-      background-color: #2ecc71;
-      color: white;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
+    #ignoreChest { background-color: #e74c3c; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    #openChest { background-color: #2ecc71; color: white; padding: 12px 24px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
     .modal {
       display: none;
       position: fixed;
@@ -178,7 +117,6 @@
       justify-content: center;
       align-items: center;
     }
-
     .modal-content {
       background-color: #1a1a1a;
       width: 90%;
@@ -191,14 +129,12 @@
       flex-direction: column;
       position: relative;
     }
-
     .modal-content h2 {
       font-size: 1.8rem;
       margin-bottom: 20px;
       text-align: center;
       color: #ffcc00;
     }
-
     .shop-item {
       background-color: #222;
       padding: 16px;
@@ -208,23 +144,9 @@
       justify-content: space-between;
       align-items: center;
     }
-
-    .shop-info h3 {
-      margin-bottom: 6px;
-      font-size: 1.3rem;
-    }
-
-    .shop-info p {
-      color: #aaa;
-      font-size: 1.1rem;
-    }
-
-    .shop-price {
-      font-weight: bold;
-      color: gold;
-      font-size: 1.3rem;
-    }
-
+    .shop-info h3 { margin-bottom: 6px; font-size: 1.3rem; }
+    .shop-info p { color: #aaa; font-size: 1.1rem; }
+    .shop-price { font-weight: bold; color: gold; font-size: 1.3rem; }
     .buy-btn {
       background-color: #3498db;
       color: white;
@@ -234,16 +156,8 @@
       font-weight: bold;
       cursor: pointer;
     }
-
-    .buy-btn:hover:not(:disabled) {
-      background-color: #2980b9;
-    }
-
-    .buy-btn:disabled {
-      background-color: #777;
-      cursor: not-allowed;
-    }
-
+    .buy-btn:hover:not(:disabled) { background-color: #2980b9; }
+    .buy-btn:disabled { background-color: #777; cursor: not-allowed; }
     .section-title {
       font-size: 1.4rem;
       margin: 16px 0 10px;
@@ -251,25 +165,18 @@
       border-bottom: 1px solid #444;
       padding-bottom: 4px;
     }
-
-    .inventory-container,
-    .chances-container,
-    .values-container {
+    .inventory-container, .chances-container, .values-container {
       max-height: 350px;
       overflow-y: auto;
       padding-right: 8px;
     }
-
     .item-list {
       list-style: none;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
-
-    .inventory-item,
-    .chance-item,
-    .value-item {
+    .inventory-item, .chance-item, .value-item {
       background-color: #222;
       padding: 10px 14px;
       border-radius: 10px;
@@ -278,33 +185,18 @@
       justify-content: space-between;
       align-items: center;
     }
-
-    .item-name,
-    .chance-name,
-    .value-name {
+    .item-name, .chance-name, .value-name {
       flex: 1;
       text-align: left;
     }
-
-    .item-quantity,
-    .chance-value,
-    .value-amount {
+    .item-quantity, .chance-value, .value-amount {
       color: #aaa;
       font-weight: 600;
       min-width: 60px;
       text-align: right;
     }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 1.2rem;
-    }
-
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-size: 1.2rem; }
     select, input {
       width: 100%;
       padding: 12px;
@@ -314,20 +206,17 @@
       background-color: #222;
       color: white;
     }
-
     .sell-buttons {
       display: flex;
       gap: 16px;
       margin-top: 20px;
     }
-
     .sell-action {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-
     .sell-btn {
       width: 100%;
       padding: 12px;
@@ -340,18 +229,13 @@
       color: white;
       transition: background 0.2s;
     }
-
-    .sell-btn:hover {
-      background-color: #27ae60;
-    }
-
+    .sell-btn:hover { background-color: #27ae60; }
     .preview-coins {
       margin-top: 8px;
       font-size: 1rem;
       color: #aaa;
       text-align: center;
     }
-
     .close-btn {
       position: absolute;
       top: 12px;
@@ -370,11 +254,7 @@
       justify-content: center;
       transition: background 0.2s;
     }
-
-    .close-btn:hover {
-      background: #ff1a1a;
-    }
-
+    .close-btn:hover { background: #ff1a1a; }
     #notification {
       position: fixed;
       top: 20px;
@@ -392,14 +272,8 @@
       align-items: center;
       gap: 8px;
     }
-
-    .icon-error {
-      color: #ff4d4d;
-    }
-
-    .icon-success {
-      color: #2ecc71;
-    }
+    .icon-error { color: #ff4d4d; }
+    .icon-success { color: #2ecc71; }
   </style>
 </head>
 <body>
@@ -436,7 +310,7 @@
     <span id="notifText">Mensagem</span>
   </div>
 
-  <!-- Modal da Loja -->
+  <!-- Modais -->
   <div id="shopModal" class="modal">
     <div class="modal-content">
       <button class="close-btn">&times;</button>
@@ -447,7 +321,7 @@
           <p>Minera sozinho (ignora baús)</p>
         </div>
         <div>
-          <div class="shop-price">3200</div>
+          <div class="shop-price">1600</div>
           <button class="buy-btn" id="buyAutoMiner">Comprar</button>
         </div>
       </div>
@@ -457,7 +331,7 @@
           <p>Minera 2 itens por vez</p>
         </div>
         <div>
-          <div class="shop-price">8500</div>
+          <div class="shop-price">4250</div>
           <button class="buy-btn" id="buyDoubleMine">Comprar</button>
         </div>
       </div>
@@ -467,14 +341,13 @@
           <p>Animação 2x mais rápida</p>
         </div>
         <div>
-          <div class="shop-price">9000</div>
+          <div class="shop-price">4500</div>
           <button class="buy-btn" id="buySpeed">Comprar</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal da Mochila -->
   <div id="backpackModal" class="modal">
     <div class="modal-content">
       <button class="close-btn">&times;</button>
@@ -489,7 +362,6 @@
     </div>
   </div>
 
-  <!-- Modal de Chances -->
   <div id="chancesModal" class="modal">
     <div class="modal-content">
       <button class="close-btn">&times;</button>
@@ -504,7 +376,6 @@
     </div>
   </div>
 
-  <!-- Modal de Valores -->
   <div id="valuesModal" class="modal">
     <div class="modal-content">
       <button class="close-btn">&times;</button>
@@ -515,7 +386,6 @@
     </div>
   </div>
 
-  <!-- Modal de Venda -->
   <div id="sellModal" class="modal">
     <div class="modal-content">
       <button class="close-btn">&times;</button>
@@ -543,9 +413,7 @@
     </div>
   </div>
 
-  <!-- TODO O RESTO DO JOGO (sem salvamento) -->
   <script>
-    // === DADOS DO JOGO ===
     const mainItems = [
       { name: '🌳 Terra', weight: 17 },
       { name: '🪓 Madeira', weight: 12 },
@@ -596,7 +464,6 @@
       '⚫ Matéria escura': 5000
     };
 
-    // === Estado do jogo ===
     let inventory = {};
     let unlockedItems = {};
     let coins = 0;
@@ -608,123 +475,174 @@
     let speedUnlocked = false;
     let autoMinerInterval = null;
 
-    // === FUNÇÕES DE HOOK PARA SALVAMENTO (serão usadas pelo script externo) ===
-    window.gameState = {
-      get: () => ({
-        inventory,
-        unlockedItems,
-        coins,
-        autoMinerUnlocked,
-        doubleMineUnlocked,
-        speedUnlocked
-      }),
-      set: (data) => {
-        inventory = data.inventory || {};
-        unlockedItems = data.unlockedItems || {};
-        coins = data.coins || 0;
-        autoMinerUnlocked = data.autoMinerUnlocked || false;
-        doubleMineUnlocked = data.doubleMineUnlocked || false;
-        speedUnlocked = data.speedUnlocked || false;
-      },
-      updateCoinsDisplay,
-      updateDisplaysLayout,
-      renderInventory,
-      autoMinerBtn: document.getElementById('autoMinerBtn')
-    };
+    // ✅ SALVAMENTO
+    function saveGame() {
+      localStorage.setItem('miningGameSave_v4', JSON.stringify({
+        inventory, unlockedItems, coins,
+        autoMinerUnlocked, doubleMineUnlocked, speedUnlocked
+      }));
+    }
 
-    // === Resto do código do jogo (sem salvamento embutido) ===
-    const spinButton = document.getElementById('spinButton');
-    const shopButton = document.getElementById('shopButton');
-    const autoMinerBtn = document.getElementById('autoMinerBtn');
-    const display1 = document.getElementById('display1');
-    const displaysContainer = document.getElementById('displays');
+    function loadGame() {
+      const data = JSON.parse(localStorage.getItem('miningGameSave_v4') || '{}');
+      inventory = data.inventory || {};
+      unlockedItems = data.unlockedItems || {};
+      coins = data.coins || 0;
+      autoMinerUnlocked = data.autoMinerUnlocked || false;
+      doubleMineUnlocked = data.doubleMineUnlocked || false;
+      speedUnlocked = data.speedUnlocked || false;
+    }
 
+    // ✅ RENDER
+    function renderInventory() {
+      const reg = document.getElementById('regularInventory');
+      const exc = document.getElementById('exclusiveInventory');
+      const excList = document.getElementById('exclusiveList');
+
+      // Itens comuns
+      const comuns = mainItems.filter(i => inventory[i.name] > 0);
+      reg.innerHTML = comuns.length ? 
+        comuns.map(i => `<div class="inventory-item"><span>${i.name}</span><span>x${inventory[i.name]}</span></div>`).join('') :
+        '<div style="text-align:center;color:#777;padding:12px;">Nenhum item comum</div>';
+
+      // Exclusivos
+      const excItens = [...exclusiveItems].filter(name => inventory[name] > 0);
+      if (excItens.length) {
+        const sorted = excItens
+          .map(name => ({ name, w: getExcWeight(name) }))
+          .sort((a, b) => b.w - a.w)
+          .map(x => x.name);
+        excList.innerHTML = sorted.map(name => 
+          `<div class="inventory-item"><span>${name}</span><span>x${inventory[name]}</span></div>`
+        ).join('');
+        exc.style.display = 'block';
+      } else {
+        exc.style.display = 'none';
+      }
+    }
+
+    function getExcWeight(name) {
+      for (const c of chests) {
+        const i = c.items.find(x => x.name === name);
+        if (i) return i.weight;
+      }
+      return 0;
+    }
+
+    function renderChances() {
+      const reg = document.getElementById('regularChances');
+      const chest = document.getElementById('chestChances');
+      const list = document.getElementById('chestList');
+
+      reg.innerHTML = mainItems.map(i => 
+        `<div class="chance-item"><span>${unlockedItems[i.name] ? i.name : 'Item misterioso'}</span><span>${i.weight}</span></div>`
+      ).join('');
+
+      let html = '';
+      chests.forEach(c => {
+        html += `<div class="chance-item"><span>${c.name}</span><span>${c.weight}</span></div>`;
+        c.items.forEach(i => {
+          html += `<div class="chance-item" style="padding-left:20px;font-size:1.15rem;"><span>- ${unlockedItems[i.name] ? i.name : 'Item misterioso'}</span><span>${i.weight}%</span></div>`;
+        });
+      });
+      list.innerHTML = html;
+      chest.style.display = 'block';
+    }
+
+    function renderValues() {
+      let html = mainItems.map(i => 
+        `<div class="value-item"><span>${unlockedItems[i.name] ? i.name : 'Item misterioso'}</span><span>${itemValues[i.name] || 0}</span></div>`
+      ).join('');
+      
+      html += `<div class="section-title">Exclusivos</div>`;
+      const allExc = [];
+      chests.forEach(c => c.items.forEach(i => allExc.push(i)));
+      html += allExc.map(i => 
+        `<div class="value-item"><span>${unlockedItems[i.name] ? i.name : 'Item misterioso'}</span><span>${itemValues[i.name] || 0}</span></div>`
+      ).join('');
+      
+      document.getElementById('valuesList').innerHTML = html;
+    }
+
+    // ✅ FUNÇÕES AUX
     function updateCoinsDisplay() {
       document.getElementById('coinsDisplay').textContent = `Moedas: ${coins.toFixed(1)}`;
-      // Salvamento será chamado externamente
+      saveGame();
     }
 
-    function showNotification(message, isSuccess = true) {
-      const notif = document.getElementById('notification');
-      const icon = document.getElementById('notifIcon');
-      const text = document.getElementById('notifText');
-      icon.textContent = isSuccess ? '✅' : '❌';
-      icon.className = isSuccess ? 'icon-success' : 'icon-error';
-      text.textContent = message;
-      notif.style.display = 'flex';
-      setTimeout(() => notif.style.display = 'none', 5000);
+    function showNotification(msg, ok = true) {
+      const n = document.getElementById('notification');
+      n.innerHTML = `<span class="${ok ? 'icon-success' : 'icon-error'}">${ok ? '✅' : '❌'}</span><span>${msg}</span>`;
+      n.style.display = 'flex';
+      setTimeout(() => n.style.display = 'none', 5000);
     }
 
-    function getRandomItemFromList(list) {
-      const total = list.reduce((sum, item) => sum + item.weight, 0);
-      let random = Math.random() * total;
-      for (const item of list) {
-        if (random < item.weight) return item;
-        random -= item.weight;
+    function getRandomItem(list) {
+      const total = list.reduce((s, i) => s + i.weight, 0);
+      let r = Math.random() * total;
+      for (const i of list) {
+        if (r < i.weight) return i;
+        r -= i.weight;
       }
       return list[list.length - 1];
     }
 
-    function addToInventory(itemName) {
-      inventory[itemName] = (inventory[itemName] || 0) + 1;
-      unlockedItems[itemName] = true;
-      // Salvamento será chamado externamente
+    function addToInventory(name) {
+      inventory[name] = (inventory[name] || 0) + 1;
+      unlockedItems[name] = true;
+      saveGame();
     }
 
     function closeChest() {
       chestActive = false;
       currentChest = null;
       document.getElementById('chestButtons').style.display = 'none';
-      spinButton.disabled = false;
+      document.getElementById('spinButton').disabled = false;
     }
 
     function updateDisplaysLayout() {
+      const container = document.getElementById('displays');
       if (doubleMineUnlocked) {
-        if (displaysContainer.children.length === 1) {
-          const display2 = document.createElement('div');
-          display2.className = 'display-item';
-          display2.id = 'display2';
-          display2.textContent = "Clique em Minerar!";
-          displaysContainer.appendChild(display2);
+        if (!document.getElementById('display2')) {
+          const d2 = document.createElement('div');
+          d2.className = 'display-item';
+          d2.id = 'display2';
+          d2.textContent = 'Clique em Minerar!';
+          container.appendChild(d2);
         }
       } else {
-        while (displaysContainer.children.length > 1) {
-          displaysContainer.removeChild(displaysContainer.lastChild);
-        }
+        const d2 = document.getElementById('display2');
+        if (d2) d2.remove();
       }
     }
 
+    // ✅ MINERAÇÃO
     function doMining() {
-      if (spinButton.disabled) return;
-      const duration = speedUnlocked ? 600 : 1200;
-      const intervalTime = speedUnlocked ? 30 : 60;
-      spinButton.disabled = true;
+      if (document.getElementById('spinButton').disabled) return;
+      const dur = speedUnlocked ? 600 : 1200;
+      const interval = speedUnlocked ? 30 : 60;
+      document.getElementById('spinButton').disabled = true;
 
-      let interval;
-      const start = Date.now();
-      interval = setInterval(() => {
-        if (Date.now() - start >= duration) {
-          clearInterval(interval);
+      let start = Date.now();
+      const anim = setInterval(() => {
+        if (Date.now() - start >= dur) {
+          clearInterval(anim);
           if (doubleMineUnlocked) {
-            const item1 = getRandomItemFromList([...mainItems, ...chests]);
-            const item2 = getRandomItemFromList([...mainItems, ...chests]);
-            display1.textContent = item1.name;
-            document.getElementById('display2').textContent = item2.name;
-
-            [item1, item2].forEach(item => {
-              if (!item.items) addToInventory(item.name);
-            });
-
-            const baus = [item1, item2].filter(item => item.items);
-            if (baus.length > 0) {
+            const i1 = getRandomItem([...mainItems, ...chests]);
+            const i2 = getRandomItem([...mainItems, ...chests]);
+            document.getElementById('display1').textContent = i1.name;
+            document.getElementById('display2').textContent = i2.name;
+            [i1, i2].forEach(i => { if (!i.items) addToInventory(i.name); });
+            const baus = [i1, i2].filter(i => i.items);
+            if (baus.length) {
               chestActive = true;
               currentChest = baus[0];
               document.getElementById('chestButtons').style.display = 'flex';
               return;
             }
           } else {
-            const item = getRandomItemFromList([...mainItems, ...chests]);
-            display1.textContent = item.name;
+            const item = getRandomItem([...mainItems, ...chests]);
+            document.getElementById('display1').textContent = item.name;
             if (item.items) {
               chestActive = true;
               currentChest = item;
@@ -734,66 +652,72 @@
               addToInventory(item.name);
             }
           }
-          setTimeout(() => { spinButton.disabled = false; }, 500);
+          setTimeout(() => document.getElementById('spinButton').disabled = false, 500);
         } else {
-          const allItems = [...mainItems, ...chests];
+          const all = [...mainItems, ...chests];
+          document.getElementById('display1').textContent = all[Math.floor(Math.random() * all.length)].name;
           if (doubleMineUnlocked) {
-            display1.textContent = allItems[Math.floor(Math.random() * allItems.length)].name;
-            document.getElementById('display2').textContent = allItems[Math.floor(Math.random() * allItems.length)].name;
-          } else {
-            display1.textContent = allItems[Math.floor(Math.random() * allItems.length)].name;
+            document.getElementById('display2').textContent = all[Math.floor(Math.random() * all.length)].name;
           }
         }
-      }, intervalTime);
+      }, interval);
     }
 
+    // ✅ MINERADOR AUTOMÁTICO
     function autoMine() {
-      if (!autoMinerActive || spinButton.disabled) return;
+      if (!autoMinerActive || document.getElementById('spinButton').disabled) return;
       if (doubleMineUnlocked) {
-        const item1 = getRandomItemFromList(mainItems);
-        const item2 = getRandomItemFromList(mainItems);
-        addToInventory(item1.name);
-        addToInventory(item2.name);
-        display1.textContent = item1.name;
-        document.getElementById('display2').textContent = item2.name;
+        const i1 = getRandomItem(mainItems);
+        const i2 = getRandomItem(mainItems);
+        addToInventory(i1.name);
+        addToInventory(i2.name);
+        document.getElementById('display1').textContent = i1.name;
+        if (document.getElementById('display2')) {
+          document.getElementById('display2').textContent = i2.name;
+        }
       } else {
-        const item = getRandomItemFromList(mainItems);
+        const item = getRandomItem(mainItems);
         addToInventory(item.name);
-        display1.textContent = item.name;
-      }
-    }
-
-    function startAutoMiner() {
-      if (autoMinerInterval) clearInterval(autoMinerInterval);
-      const intervalTime = speedUnlocked ? 650 : 1250;
-      autoMinerInterval = setInterval(autoMine, intervalTime);
-    }
-
-    function stopAutoMiner() {
-      if (autoMinerInterval) {
-        clearInterval(autoMinerInterval);
-        autoMinerInterval = null;
+        document.getElementById('display1').textContent = item.name;
       }
     }
 
     function toggleAutoMiner() {
       if (!autoMinerUnlocked) return;
       autoMinerActive = !autoMinerActive;
-      autoMinerBtn.className = autoMinerActive ? 'on' : 'off';
-      autoMinerBtn.textContent = `Minerador: ${autoMinerActive ? 'ON' : 'OFF'}`;
-      if (autoMinerActive) startAutoMiner();
-      else stopAutoMiner();
+      const btn = document.getElementById('autoMinerBtn');
+      btn.className = autoMinerActive ? 'on' : 'off';
+      btn.textContent = `Minerador: ${autoMinerActive ? 'ON' : 'OFF'}`;
+
+      if (autoMinerActive) {
+        if (autoMinerInterval) clearInterval(autoMinerInterval);
+        const time = speedUnlocked ? 600 : 1200;
+        autoMinerInterval = setInterval(autoMine, time);
+      } else {
+        if (autoMinerInterval) clearInterval(autoMinerInterval);
+      }
     }
 
-    // === Compras ===
+    // ✅ EVENTOS
+    document.getElementById('spinButton').onclick = () => {
+      const d1 = document.getElementById('display1');
+      d1.textContent = 'Clique em Minerar!';
+      if (doubleMineUnlocked && document.getElementById('display2')) {
+        document.getElementById('display2').textContent = 'Clique em Minerar!';
+      }
+      doMining();
+    };
+
+    document.getElementById('autoMinerBtn').onclick = toggleAutoMiner;
+
+    // Compras
     document.getElementById('buyAutoMiner').onclick = () => {
-      if (coins >= 3200 && !autoMinerUnlocked) {
-        coins -= 3200;
+      if (coins >= 1600 && !autoMinerUnlocked) {
+        coins -= 1600;
         autoMinerUnlocked = true;
-        autoMinerBtn.style.display = 'block';
+        document.getElementById('autoMinerBtn').style.display = 'block';
         updateCoinsDisplay();
         showNotification("Minerador Automático comprado!");
-        // Salvamento externo
       } else if (autoMinerUnlocked) {
         showNotification("Já possui este item!", false);
       } else {
@@ -802,13 +726,12 @@
     };
 
     document.getElementById('buyDoubleMine').onclick = () => {
-      if (coins >= 8500 && !doubleMineUnlocked) {
-        coins -= 8500;
+      if (coins >= 4250 && !doubleMineUnlocked) {
+        coins -= 4250;
         doubleMineUnlocked = true;
         updateDisplaysLayout();
         updateCoinsDisplay();
         showNotification("+1 Mina ativado!");
-        // Salvamento externo
       } else if (doubleMineUnlocked) {
         showNotification("Já possui este item!", false);
       } else {
@@ -817,12 +740,11 @@
     };
 
     document.getElementById('buySpeed').onclick = () => {
-      if (coins >= 9000 && !speedUnlocked) {
-        coins -= 9000;
+      if (coins >= 4500 && !speedUnlocked) {
+        coins -= 4500;
         speedUnlocked = true;
         updateCoinsDisplay();
         showNotification("Velocidade 2.0 ativada!");
-        // Salvamento externo
       } else if (speedUnlocked) {
         showNotification("Já possui este item!", false);
       } else {
@@ -830,10 +752,12 @@
       }
     };
 
-    // === Baú ===
+    // Baú
     document.getElementById('ignoreChest').onclick = () => {
-      display1.textContent = "Baú ignorado.";
-      if (doubleMineUnlocked) document.getElementById('display2').textContent = "Baú ignorado.";
+      document.getElementById('display1').textContent = "Baú ignorado.";
+      if (doubleMineUnlocked && document.getElementById('display2')) {
+        document.getElementById('display2').textContent = "Baú ignorado.";
+      }
       closeChest();
     };
 
@@ -844,205 +768,48 @@
       }
       coins -= 500;
       updateCoinsDisplay();
-      const rewardItem = getRandomItemFromList(currentChest.items);
-      addToInventory(rewardItem.name);
+      const reward = getRandomItem(currentChest.items);
+      addToInventory(reward.name);
       renderInventory();
-      display1.textContent = `Você abriu o baú e ganhou ${rewardItem.name}`;
-      if (doubleMineUnlocked) document.getElementById('display2').textContent = "";
+      document.getElementById('display1').textContent = `Você abriu o baú e ganhou ${reward.name}`;
+      if (doubleMineUnlocked && document.getElementById('display2')) {
+        document.getElementById('display2').textContent = "";
+      }
       closeChest();
-      // Salvamento externo
     };
 
-    spinButton.onclick = () => {
-      if (doubleMineUnlocked) {
-        display1.textContent = "Clique em Minerar!";
-        document.getElementById('display2').textContent = "Clique em Minerar!";
-      } else {
-        display1.textContent = "Clique em Minerar!";
-      }
-      doMining();
-    };
-
-    autoMinerBtn.onclick = toggleAutoMiner();
-
-    // === Modais ===
-    const backpackButton = document.getElementById('backpackButton');
-    const chancesButton = document.getElementById('chancesButton');
-    const valuesButton = document.getElementById('valuesButton');
-    const sellButton = document.getElementById('sellButton');
-    const backpackModal = document.getElementById('backpackModal');
-    const chancesModal = document.getElementById('chancesModal');
-    const valuesModal = document.getElementById('valuesModal');
-    const sellModal = document.getElementById('sellModal');
-    const shopModal = document.getElementById('shopModal');
-
-    function setupModal(modal) {
-      modal.querySelectorAll('.close-btn').forEach(btn => {
-        btn.addEventListener('click', () => modal.style.display = 'none');
-      });
-      window.addEventListener('click', e => {
-        if (e.target === modal) modal.style.display = 'none';
-      });
-    }
-
-    backpackButton.onclick = () => { renderInventory(); backpackModal.style.display = 'flex'; };
-    chancesButton.onclick = () => { renderChances(); chancesModal.style.display = 'flex'; };
-    valuesButton.onclick = () => { renderValues(); valuesModal.style.display = 'flex'; };
-    sellButton.onclick = () => { populateSellDropdown(); updatePreviews(); sellModal.style.display = 'flex'; };
-    shopButton.onclick = () => { shopModal.style.display = 'flex'; };
-
-    setupModal(backpackModal);
-    setupModal(chancesModal);
-    setupModal(valuesModal);
-    setupModal(sellModal);
-    setupModal(shopModal);
-
-    // === Render ===
-    function renderInventory() {
-      const regularDiv = document.getElementById('regularInventory');
-      const exclusiveDiv = document.getElementById('exclusiveInventory');
-      const exclusiveList = document.getElementById('exclusiveList');
-
-      const regularItems = mainItems.filter(item => inventory[item.name] > 0);
-      if (regularItems.length > 0) {
-        let html = '';
-        regularItems.forEach(item => {
-          html += `<div class="inventory-item">
-            <span class="item-name">${item.name}</span>
-            <span class="item-quantity">x${inventory[item.name]}</span>
-          </div>`;
-        });
-        regularDiv.innerHTML = html;
-      } else {
-        regularDiv.innerHTML = '<div style="text-align:center;color:#777;padding:12px;">Nenhum item comum</div>';
-      }
-
-      const exclusiveOwned = Array.from(exclusiveItems).filter(name => inventory[name] > 0);
-      if (exclusiveOwned.length > 0) {
-        const sorted = exclusiveOwned
-          .map(name => ({ name, weight: getExclusiveWeight(name) }))
-          .sort((a, b) => b.weight - a.weight)
-          .map(x => x.name);
-
-        let html = '';
-        sorted.forEach(name => {
-          html += `<div class="inventory-item">
-            <span class="item-name">${name}</span>
-            <span class="item-quantity">x${inventory[name]}</span>
-          </div>`;
-        });
-        exclusiveList.innerHTML = html;
-        exclusiveDiv.style.display = 'block';
-      } else {
-        exclusiveDiv.style.display = 'none';
-      }
-    }
-
-    function getExclusiveWeight(name) {
-      for (const chest of chests) {
-        const item = chest.items.find(i => i.name === name);
-        if (item) return item.weight;
-      }
-      return 0;
-    }
-
-    function renderChances() {
-      const regularDiv = document.getElementById('regularChances');
-      const chestDiv = document.getElementById('chestChances');
-      const chestList = document.getElementById('chestList');
-
-      let html = '';
-      mainItems.forEach(item => {
-        const displayName = unlockedItems[item.name] ? item.name : 'Item misterioso';
-        html += `<div class="chance-item">
-          <span class="chance-name">${displayName}</span>
-          <span class="chance-value">${item.weight}</span>
-        </div>`;
-      });
-      regularDiv.innerHTML = html;
-
-      let chestHtml = '';
-      chests.forEach(chest => {
-        chestHtml += `<div class="chance-item">
-          <span class="chance-name">${chest.name}</span>
-          <span class="chance-value">${chest.weight}</span>
-        </div>`;
-        chest.items.forEach(item => {
-          const displayName = unlockedItems[item.name] ? item.name : 'Item misterioso';
-          chestHtml += `<div class="chance-item" style="padding-left:20px;font-size:1.15rem;">
-            <span class="chance-name">- ${displayName}</span>
-            <span class="chance-value">${item.weight}%</span>
-          </div>`;
-        });
-      });
-      chestList.innerHTML = chestHtml;
-      chestDiv.style.display = 'block';
-    }
-
-    function renderValues() {
-      const list = document.getElementById('valuesList');
-      let html = '';
-
-      mainItems.forEach(item => {
-        const displayName = unlockedItems[item.name] ? item.name : 'Item misterioso';
-        const value = itemValues[item.name] || 0;
-        html += `<div class="value-item">
-          <span class="value-name">${displayName}</span>
-          <span class="value-amount">${value}</span>
-        </div>`;
-      });
-
-      html += `<div class="section-title">Exclusivos</div>`;
-
-      const allExclusiveItems = [];
-      chests.forEach(chest => {
-        chest.items.forEach(item => {
-          allExclusiveItems.push(item);
-        });
-      });
-
-      allExclusiveItems.forEach(item => {
-        const displayName = unlockedItems[item.name] ? item.name : 'Item misterioso';
-        const value = itemValues[item.name] || 0;
-        html += `<div class="value-item">
-          <span class="value-name">${displayName}</span>
-          <span class="value-amount">${value}</span>
-        </div>`;
-      });
-
-      list.innerHTML = html;
-    }
-
+    // Venda
     function populateSellDropdown() {
-      const select = document.getElementById('sellItem');
-      select.innerHTML = '<option value="">Selecione um item</option>';
-      const allOwned = Object.keys(inventory).filter(name => inventory[name] > 0);
-      allOwned.forEach(name => {
-        const opt = document.createElement('option');
-        opt.value = name;
-        opt.textContent = `${name} (x${inventory[name]})`;
-        select.appendChild(opt);
-      });
+      const sel = document.getElementById('sellItem');
+      sel.innerHTML = '<option value="">Selecione um item</option>';
+      Object.keys(inventory)
+        .filter(name => inventory[name] > 0)
+        .forEach(name => {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = `${name} (x${inventory[name]})`;
+          sel.appendChild(opt);
+        });
     }
 
     function updatePreviews() {
-      const itemName = document.getElementById('sellItem').value;
+      const name = document.getElementById('sellItem').value;
       const qty = parseInt(document.getElementById('sellQuantity').value) || 0;
-      const preview1 = document.getElementById('previewConvert');
-      const preview2 = document.getElementById('previewConvertAll');
+      const p1 = document.getElementById('previewConvert');
+      const p2 = document.getElementById('previewConvertAll');
 
-      if (itemName && inventory[itemName] > 0) {
-        const q = Math.min(qty, inventory[itemName]);
-        preview1.textContent = `+${(itemValues[itemName] * q).toFixed(1)} moedas`;
+      if (name && inventory[name] > 0) {
+        const q = Math.min(qty, inventory[name]);
+        p1.textContent = `+${(itemValues[name] * q).toFixed(1)} moedas`;
       } else {
-        preview1.textContent = '+0 moedas';
+        p1.textContent = '+0 moedas';
       }
 
       let total = 0;
-      for (const name in inventory) {
-        if (inventory[name] > 0) total += (itemValues[name] || 0) * inventory[name];
+      for (const n in inventory) {
+        if (inventory[n] > 0) total += (itemValues[n] || 0) * inventory[n];
       }
-      preview2.textContent = `+${total.toFixed(1)} moedas`;
+      p2.textContent = `+${total.toFixed(1)} moedas`;
     }
 
     function sellItem() {
@@ -1064,7 +831,6 @@
       updatePreviews();
       renderInventory();
       showNotification("Você vendeu os itens");
-      // Salvamento externo
     }
 
     function sellAll() {
@@ -1079,22 +845,61 @@
       updatePreviews();
       renderInventory();
       showNotification("Você vendeu todos os itens");
-      // Salvamento externo
     }
 
+    // ✅ MODAIS
+    function setupModal(id) {
+      const modal = document.getElementById(id);
+      modal.querySelector('.close-btn').onclick = () => modal.style.display = 'none';
+      window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+    }
+
+    document.getElementById('backpackButton').onclick = () => {
+      renderInventory();
+      document.getElementById('backpackModal').style.display = 'flex';
+    };
+
+    document.getElementById('chancesButton').onclick = () => {
+      renderChances();
+      document.getElementById('chancesModal').style.display = 'flex';
+    };
+
+    document.getElementById('valuesButton').onclick = () => {
+      renderValues();
+      document.getElementById('valuesModal').style.display = 'flex';
+    };
+
+    document.getElementById('sellButton').onclick = () => {
+      populateSellDropdown();
+      updatePreviews();
+      document.getElementById('sellModal').style.display = 'flex';
+    };
+
+    document.getElementById('shopButton').onclick = () => {
+      document.getElementById('shopModal').style.display = 'flex';
+    };
+
+    // Setup modais
+    ['backpackModal', 'chancesModal', 'valuesModal', 'sellModal', 'shopModal'].forEach(setupModal);
+
+    // Eventos de venda
     document.getElementById('sellItem').onchange = updatePreviews;
     document.getElementById('sellQuantity').oninput = updatePreviews;
     document.getElementById('convertBtn').onclick = sellItem;
     document.getElementById('convertAllBtn').onclick = sellAll;
 
-    // === INICIALIZAÇÃO SEM SALVAMENTO ===
+    // ✅ INICIALIZAÇÃO
+    loadGame();
     updateCoinsDisplay();
     updateDisplaysLayout();
+    if (autoMinerUnlocked) document.getElementById('autoMinerBtn').style.display = 'block';
+    renderInventory();
+    renderChances();
+    renderValues();
+    populateSellDropdown();
 
-    // Eventos de inicialização que o salvamento externo usará
-    if (typeof initGame !== 'undefined') {
-      initGame();
-    }
+    // Auto-save
+    setInterval(saveGame, 3000);
   </script>
 </body>
 </html>
